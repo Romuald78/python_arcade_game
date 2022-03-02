@@ -3,12 +3,6 @@ from sources.utils import createFixedSprite
 
 class Ship():
 
-    OWN     = 0
-    SHIP12  = 1
-    SHIP13  = 2
-    SHIP23  = 3
-    SHIP123 = 4
-
     def __init__(self, index, position=(0,0)):
         # index of the ship owner
         self.index      = str(index)
@@ -17,7 +11,7 @@ class Ship():
         self.y = position[1]
         # Load all needed sprites
         params = {
-            "filePath": f"images/ships/ship0{self.index}.png",
+            "filePath": f"projects/shmup/images/ships/ship0{self.index}.png",
             "position": (self.x, self.y),
             # ----------------------------------------
             "size": (96, 96),
@@ -31,10 +25,10 @@ class Ship():
         for i in range(1,3):
             for j in range(i+1,4):
                 params["size"] = (160, 160)
-                params["filePath"] = f"images/ships/ship{i}{j}.png"
+                params["filePath"] = f"projects/shmup/images/ships/ship{i}{j}.png"
                 self.ships[f"{i}{j}"] = createFixedSprite(params)
         params["size"] = (192, 192)
-        params["filePath"] = f"images/ships/ship123.png"
+        params["filePath"] = f"projects/shmup/images/ships/ship123.png"
         self.ships["123"] = createFixedSprite(params)
 
     def update(self, deltaTime):

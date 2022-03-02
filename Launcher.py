@@ -2,7 +2,7 @@
 ### IMPORTS
 ### ====================================================================================================
 import arcade
-from process import Process
+from shmup_process import Process
 import os
 
 

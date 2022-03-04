@@ -5,7 +5,6 @@ import arcade.key
 from sources.utils import createFixedSprite, rotate
 
 
-
 class CyGameSplash():
 
     STATE_2IDLE   = 0
@@ -14,6 +13,12 @@ class CyGameSplash():
     STATE_SELECT  = 3
     STATE_2GAME   = 4
     STATE_GAME    = 5
+
+    def __isShipSelected(self, shipID):
+        for player in self.players:
+            if player["shipID"] == shipID:
+                return True
+        return False
 
     def __moveBackground(self):
         period = 101
@@ -75,6 +80,9 @@ class CyGameSplash():
             self.title.center_y = (self.title.center_y*0.90 + 0.10*y1)
             if abs(self.title.center_y - y1) < 5:
                 self.state = self.STATE_IDLE
+                for ship in self.ships:
+                    ship.center_x = self.W/4
+                    ship.center_y = -self.H/4
         elif self.state == self.STATE_2SELECT:
             # Move the title up
             self.title.center_x = (self.title.center_x * 0.90 + 0.10 * self.W / 2)
@@ -94,6 +102,47 @@ class CyGameSplash():
         y0 = ry*math.sin(2*self.time*math.pi/period)+yc
         self.pressStart.center_x = x0
         self.pressStart.center_y = y0
+
+    def __moveGUI(self):
+        # Move ships and Set frame pos to ship pos
+        for i in range(len(self.frames)):
+            # Move ship
+            x0 = self.W * 0.22
+            y0 = self.title.center_y - (self.H * 0.22)
+            dx = self.W * 0.13
+            dy = -self.H * 0.26
+            xc = x0 + i * dx
+            yc = y0 + i * dy
+            period = 23
+            rx = self.W * 0.01
+            ry = self.H * 0.01
+            x0 = rx * math.cos(2 * self.time * math.pi / period) + xc
+            y0 = ry * math.sin(2 * self.time * math.pi / period) + yc
+            x1, y1 = rotate((x0, y0), (xc, yc), 59 * (i + 1))
+            if self.state == self.STATE_2SELECT or (self.state == self.STATE_SELECT and (abs(self.ships[i].center_x - x1)>= 1 or abs(self.ships[i].center_y - y1)>= 1)):
+                # Move the ships up
+                self.ships[i].center_x = self.ships[i].center_x * (0.86+0.02*(i+1)) + (0.14-0.02*(i+1)) * x1
+                self.ships[i].center_y = self.ships[i].center_y * (0.86+0.02*(i+1)) + (0.14-0.02*(i+1)) * y1
+            elif self.state == self.STATE_2IDLE:
+                # Move the ships down
+                x1 = self.W/4
+                y1 = -self.H/4
+                self.ships[i].center_x = self.ships[i].center_x * (0.86+0.02*(i+1)) + (0.14-0.02*(i+1)) * x1
+                self.ships[i].center_y = self.ships[i].center_y * (0.86+0.02*(i+1)) + (0.14-0.02*(i+1)) * y1
+            elif self.state == self.STATE_SELECT:
+                self.ships[i].center_x = x1
+                self.ships[i].center_y = y1
+            # move frame
+            self.frames[i].center_x = self.ships[i].center_x
+            self.frames[i].center_y = self.ships[i].center_y
+            # Set filter color
+            if self.__isShipSelected(i+1):
+                self.frames[i].color = self.players[i]["color"]
+                self.ships[i].color  = (255,255,255,255)
+            else:
+                self.frames[i].color = (128,128,128,200)
+                self.ships[i].color  = (128,128,128,200)
+
 
     def __init__(self, W, H, manager):
         super().__init__()
@@ -141,28 +190,46 @@ class CyGameSplash():
         }
         self.pressStart = createFixedSprite(params)
         # SHIPS
-        self.ships = []
+        self.ships   = []
+        self.frames  = []
+        self.players = []
+        colors = [(0,255,0,200),
+                  (255,255,0,200),
+                  (0, 0, 255, 200)]
         for i in range(1,4):
             params = {
                 "filePath": f"projects/shmup/images/ships/ship0{i}.png",
-                "position": (self.W // 2, self.H / 4 + (i-1) * self.H/4),
+                "position": (self.H/4, -self.H/4),
                 "size": (self.W * 0.15, self.H * 0.15),
                 "filterColor": (255, 255, 255, 255),
             }
             self.ships.append( createFixedSprite(params) )
+            params = {
+                "filePath": "projects/shmup/images/gui/frame.png",
+                "position": (self.H/4,-self.H/4),
+                "size": (self.H/2.7, self.W/2.7),
+                "filterColor":colors[i-1]
+            }
+            self.frames.append( createFixedSprite(params) )
+            self.players.append( {"playerID": i,
+                                  "shipID"  : 2,
+                                  "ctrlID"  : -1,
+                                  "color"   : colors[i-1]} )
 
+        # game time and state
         self.time = 0
         self.state = self.STATE_2IDLE
 
 
     def update(self,deltaTime):
         self.time += deltaTime
-        # Move elements
+        # Move GUI elements
         self.__moveBackground()
         self.__moveMoon()
         self.__movePlanet()
         self.__moveTitle()
         self.__movePressStart()
+        self.__moveGUI()
 
     def draw(self):
         self.back.draw()
@@ -171,17 +238,18 @@ class CyGameSplash():
         self.title.draw()
         if self.time%2 > 1.0 and self.state == self.STATE_IDLE:
             self.pressStart.draw()
-        elif self.state == self.STATE_SELECT:
-            for ship in self.ships:
-                ship.draw()
+        for frame in self.frames:
+            frame.draw()
+        for ship in self.ships:
+            ship.draw()
 
     def onKeyEvent(self, key, isPressed):
         if not isPressed:
             # if we are opening the game
-            if self.state <= self.STATE_IDLE:
+            if self.state == self.STATE_IDLE:
                 self.state = self.STATE_2SELECT
             # if we are in the select part
-            elif self.state == self.STATE_2SELECT or self.state == self.STATE_SELECT:
+            elif self.state == self.STATE_SELECT:
                 if key==arcade.key.LEFT:
                     self.state = self.STATE_2IDLE
                 elif key == arcade.key.RIGHT:

@@ -71,16 +71,23 @@ class Process:
     ### buttonName can be "A", "B", "X", "Y", "LB", "RB", "VIEW", "MENU", "LSTICK", "RSTICK"
     ### ====================================================================================================
     def onButtonEvent(self, gamepadNum,buttonName,isPressed):
-        print(f"GamePad={gamepadNum} - ButtonNum={buttonName} - isPressed={isPressed}")
-        
+        #print(f"GamePad={gamepadNum} - ButtonNum={buttonName} - isPressed={isPressed}")
+        # transfer event to page if needed
+        check = callable(getattr(self.currentPage, 'onButtonEvent', None))
+        if check:
+            self.currentPage.onButtonEvent(gamepadNum, buttonName, isPressed)
+
 
     ### ====================================================================================================
     ### GAMEPAD AXIS EVENTS
     ### axisName can be "X", "Y", "RX", "RY", "Z"
     ### ====================================================================================================
     def onAxisEvent(self, gamepadNum,axisName,analogValue):
-        print(f"GamePad={gamepadNum} - AxisName={axisName} - Value={analogValue}")
-        
+        #print(f"GamePad={gamepadNum} - AxisName={axisName} - Value={analogValue}")
+        # transfer event to page if needed
+        check = callable(getattr(self.currentPage, 'onAxisEvent', None))
+        if check:
+            self.currentPage.onAxisEvent(gamepadNum, axisName, analogValue)
 
     ### ====================================================================================================
     ### MOUSE MOTION EVENTS

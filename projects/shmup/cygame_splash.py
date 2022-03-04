@@ -11,12 +11,13 @@ class CyGameSplash():
     STATE_IDLE    = 1
     STATE_2SELECT = 2
     STATE_SELECT  = 3
-    STATE_2GAME   = 4
-    STATE_GAME    = 5
+    STATE_ALIGN   = 4
+    STATE_FLY     = 5
+    STATE_GAME    = 6
 
     def __isShipSelected(self, shipID):
         for player in self.players:
-            if player["shipID"] == shipID:
+            if player["ctrlID"] != -1 and player["shipID"] == shipID:
                 return True
         return False
 
@@ -104,6 +105,29 @@ class CyGameSplash():
         self.pressStart.center_y = y0
 
     def __moveGUI(self):
+        # check if all ships are aligned
+        if self.state == self.STATE_ALIGN:
+            ok = True
+            for ship in self.ships:
+                if ship.angle != 0:
+                    ok = False
+                    break
+            if ok:
+                self.state = self.STATE_FLY
+        # check if all ships are sent to game
+        if self.state == self.STATE_FLY:
+            ok = True
+            for i in range(len(self.ships)):
+                if self.ships[i].center_x < self.W*1.5 and self.players[i]["ctrlID"] != -1:
+                    ok = False
+                    break
+            if ok:
+                self.state = self.STATE_GAME
+
+        # if ready to go to game
+        if self.state == self.STATE_GAME:
+            print("@@@@@@@")
+
         # Move ships and Set frame pos to ship pos
         for i in range(len(self.frames)):
             # Move ship
@@ -123,25 +147,48 @@ class CyGameSplash():
                 # Move the ships up
                 self.ships[i].center_x = self.ships[i].center_x * (0.86+0.02*(i+1)) + (0.14-0.02*(i+1)) * x1
                 self.ships[i].center_y = self.ships[i].center_y * (0.86+0.02*(i+1)) + (0.14-0.02*(i+1)) * y1
-            elif self.state == self.STATE_2IDLE:
+                self.ships[i].angle = 0
+            elif self.state == self.STATE_2IDLE or (self.state >= self.STATE_ALIGN and self.players[i]["ctrlID"] == -1):
                 # Move the ships down
                 x1 = self.W/4
                 y1 = -self.H/4
                 self.ships[i].center_x = self.ships[i].center_x * (0.86+0.02*(i+1)) + (0.14-0.02*(i+1)) * x1
                 self.ships[i].center_y = self.ships[i].center_y * (0.86+0.02*(i+1)) + (0.14-0.02*(i+1)) * y1
+                self.ships[i].angle = 0
             elif self.state == self.STATE_SELECT:
                 self.ships[i].center_x = x1
                 self.ships[i].center_y = y1
-            # move frame
-            self.frames[i].center_x = self.ships[i].center_x
-            self.frames[i].center_y = self.ships[i].center_y
+            elif self.state == self.STATE_FLY and self.players[i]["ctrlID"] != -1:
+                # Move the ships RIGHT
+                self.ships[i].center_x = self.ships[i].center_x * 0.98 + 0.02 * self.W*2
+
             # Set filter color
             if self.__isShipSelected(i+1):
                 self.frames[i].color = self.players[i]["color"]
-                self.ships[i].color  = (255,255,255,255)
+                self.ships[i].color  = (255,255,255,192)
             else:
-                self.frames[i].color = (128,128,128,200)
-                self.ships[i].color  = (128,128,128,200)
+                self.frames[i].color = (128,128,128,128)
+                self.ships[i].color  = (128,128,144,128)
+
+            # Rotate ship according to lastX
+            if self.state <= self.STATE_SELECT:
+                if self.players[i]["ctrlID"] != -1:
+                    self.ships[i].angle -= 5 * self.players[i]["lastX"]
+            elif self.STATE_ALIGN:
+                ang = abs(self.ships[i].angle % 360)
+                if ang <= 6 or ang >= 354:
+                    self.ships[i].angle = 0
+                elif ang >=180 :
+                    self.ships[i].angle += 5
+                else:
+                    self.ships[i].angle -= 5
+
+            # move frame
+            if self.state <= self.STATE_ALIGN:
+                self.frames[i].center_x = self.ships[i].center_x
+                self.frames[i].center_y = self.ships[i].center_y
+
+
 
 
     def __init__(self, W, H, manager):
@@ -193,9 +240,9 @@ class CyGameSplash():
         self.ships   = []
         self.frames  = []
         self.players = []
-        colors = [(0,255,0,200),
-                  (255,255,0,200),
-                  (0, 0, 255, 200)]
+        colors = [(0,255,0,192),
+                  (255,255,0,192),
+                  (0, 0, 255, 192)]
         for i in range(1,4):
             params = {
                 "filePath": f"projects/shmup/images/ships/ship0{i}.png",
@@ -211,10 +258,11 @@ class CyGameSplash():
                 "filterColor":colors[i-1]
             }
             self.frames.append( createFixedSprite(params) )
-            self.players.append( {"playerID": i,
-                                  "shipID"  : 2,
-                                  "ctrlID"  : -1,
-                                  "color"   : colors[i-1]} )
+            self.players.append( {"shipID" : i,
+                                  "ctrlID" : -1,
+                                  "color"  : colors[i-1],
+                                  "lastX"  : 0,
+                                  "lastY"  : 0 } )
 
         # game time and state
         self.time = 0
@@ -244,13 +292,105 @@ class CyGameSplash():
             ship.draw()
 
     def onKeyEvent(self, key, isPressed):
+        pass
+
+    def registerCtrl(self, ctrlID):
+        print(self.players)
+        for i in range(len(self.players)):
+            if self.players[i]["ctrlID"] == ctrlID:
+                # already registered
+                return False
+        # not registered : find an available slot
+        for i in range(len(self.players)):
+            if self.players[i]["ctrlID"] == -1:
+                self.players[i]["ctrlID"] = ctrlID
+                self.players[i]["lastX"] = 0
+                self.players[i]["lastY"] = 0
+                self.ships[i].angle = 0
+                return True
+
+    def unregisterCtrlID(self, ctrlID):
+        for i in range(len(self.players)):
+            if self.players[i]["ctrlID"] == ctrlID:
+                self.players[i]["ctrlID"] = -1
+                return True
+        return False
+
+    def isRegistered(self,ctrlID):
+        for i in range(len(self.players)):
+            if self.players[i]["ctrlID"] == ctrlID:
+                return True
+        return False
+
+    def nbPlayerRegistered(self):
+        count = 0
+        for player in self.players:
+            if player["ctrlID"] != -1:
+                count += 1
+        return count
+
+    def onButtonEvent(self, gamepadNum, buttonName, isPressed):
         if not isPressed:
+            # --------------------------------------
             # if we are opening the game
+            # --------------------------------------
             if self.state == self.STATE_IDLE:
-                self.state = self.STATE_2SELECT
+                if self.registerCtrl(gamepadNum):
+                    self.state = self.STATE_2SELECT
+            # --------------------------------------
             # if we are in the select part
+            # --------------------------------------
             elif self.state == self.STATE_SELECT:
-                if key==arcade.key.LEFT:
-                    self.state = self.STATE_2IDLE
-                elif key == arcade.key.RIGHT:
-                    self.state = self.STATE_2GAME
+                if buttonName=="MENU":
+                    if self.isRegistered(gamepadNum):
+                        self.state = self.STATE_ALIGN
+                    if self.registerCtrl(gamepadNum):
+                        return
+                elif buttonName=="B":
+                    if self.unregisterCtrlID(gamepadNum):
+                        if self.nbPlayerRegistered() == 0:
+                            self.state = self.STATE_2IDLE
+                    else :
+                        self.registerCtrl(gamepadNum)
+                else:
+                    self.registerCtrl(gamepadNum)
+
+
+    def onAxisEvent(self, gamepadNum, axisName, analogValue):
+        if self.state <= self.STATE_SELECT:
+            for i in range(len(self.players)):
+                # found the registered player
+                if self.players[i]["ctrlID"] == gamepadNum:
+                    if axisName == "X":
+                        self.players[i]["lastX"] = analogValue
+                        if abs(self.players[i]["lastX"]) <= 0.1:
+                            self.players[i]["lastX"] = 0
+                    if axisName == "Y":
+                        prevY = self.players[i]["lastY"]
+                        self.players[i]["lastY"] = analogValue
+                        if abs(self.players[i]["lastY"]) <= 0.1:
+                            self.players[i]["lastY"] = 0
+                        # step DOWN
+                        if analogValue <= -0.5 < prevY:
+                            j = i-1
+                            while j >= 0:
+                                if self.players[j]["ctrlID"] == -1:
+                                    # swap
+                                    self.players[j]["ctrlID"] = self.players[i]["ctrlID"]
+                                    self.players[j]["lastY"]  = self.players[i]["lastY"]
+                                    self.players[i]["ctrlID"] = -1
+                                    return
+                                j -= 1
+                            break
+                        # step UP
+                        if prevY < 0.5 <= analogValue:
+                            j = i+1
+                            while j <= 2:
+                                if self.players[j]["ctrlID"] == -1:
+                                    # swap
+                                    self.players[j]["ctrlID"] = self.players[i]["ctrlID"]
+                                    self.players[j]["lastY"]  = self.players[i]["lastY"]
+                                    self.players[i]["ctrlID"] = -1
+                                    return
+                                j += 1
+                            break

@@ -1,6 +1,4 @@
-import random
-
-from sources.utils import createAnimatedSprite
+from utils.utils import createAnimatedSprite
 from random import randint
 
 
@@ -17,7 +15,7 @@ class Page5Rotation():
         x = randint(0, self.W)
         y = randint(0, self.H)
         params = {
-            "filePath": "images/items/candies.png",
+            "filePath": "projects/demo/images/items/candies.png",
             "spriteBox": (3, 2, 128, 128),
             "position": (x, y),
             "startIndex": idx,

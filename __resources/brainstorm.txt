@@ -1,0 +1,41 @@
+> preparer mailing list, preing1, 2 et ing1 (et profs ? info ?)
+    - doc.cy-tech.fr/mailings
+
+> définir le format des rdv en présentiel
+    - #1) présentation globale event
+        - but (dev jeu video, découvrir python)
+        - augmenter ses skills / valoriser CV
+        - presenter le planning de l'event (dates, jalons, demos live, rendu, ...)
+        - montrer l'adresse des sources et la doc pour installer l'environnement
+        - fournir un moyen de s'inscrire ? (pseudo de l'équipe, email,  ?)
+                
+    - #2) présentation environnement et installation
+        - pyCharm
+        - dependances (arcade)
+        - fichiers projet fournis
+        - laisser les équipes se présenter ...
+        - ... et présenter leur jeu "prévu" (type, gameplay, graphisme, ...)
+        
+    - #3) présentation de la lib et de la surcouche proposée + toutes les features
+        - sprites statiques
+        - sprites dynamiques
+        - déplacements
+        - rotation
+        - gestion des touches
+        - gestion souris
+        - gestion gamepads
+        - effets de particules
+        - texte brut
+        - sons 
+        
+    - #4) plusieurs petits points d'avancement 
+        - rendez-vous global pour faire le point sur les avancées
+        - laisser les groupes présenter leur contenu actuel
+        - voir ensemble les problématiques et les moyens d'y répondre
+        - faire du live coding pour tester les features qui posent problème
+
+    - #5) rendu final : Démo / Gouter / Test des jeux etc....
+                
+> rédiger l'email avec date de présentation et plannings des différents rdv
+
+

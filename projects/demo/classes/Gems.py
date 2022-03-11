@@ -1,27 +1,27 @@
-from sources.utils import  *
+from utils.utils import  *
 import math
 
 
 class Star():
 
     def __init__(self, W, H, spriteSelect):
+        self.W      = W
+        self.H      = H
         self.angStep = 90
-        self.radius = randint(350,450)
+        self.radius = randint(self.W//4,self.W//3)
         self.speed  = 0
         self.ang2   = self.angStep
         self.ang    = 0
         self.rotWay = 1
-        self.W      = W
-        self.H      = H
         self.moveToCenter = True
         params = {
             "position": (-1000,-1000),
-            "filePath": "images/items/gems.png",
+            "filePath": "projects/demo/images/items/gems.png",
             "spriteBox": (6, 3, 100, 100),
             "spriteSelect": spriteSelect,
 
             "partSize": 128,
-            "partScale": 0.9,
+            "partScale": 0.65,
             "partSpeed": 1.0,
             "filterColor": (255,255,255,255),
             "startAlpha": 75,

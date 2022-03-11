@@ -1,9 +1,8 @@
 ### ====================================================================================================
 ### IMPORTS
 ### ====================================================================================================
-import arcade
 
-from projects.shmup.cygame_splash import CyGameSplash
+from projects.shmup.pages.cygame_splash import CyGameSplash
 
 
 class Process:
@@ -11,8 +10,8 @@ class Process:
     ### ====================================================================================================
     ### PARAMETERS
     ### ====================================================================================================
-    SCREEN_WIDTH  = int(1920*0.75)
-    SCREEN_HEIGHT = int(1080*0.75)
+    SCREEN_WIDTH  = int(1280*0.75)
+    SCREEN_HEIGHT = int(1024*0.75)
 
 
     def selectPage(self, pageIndex):

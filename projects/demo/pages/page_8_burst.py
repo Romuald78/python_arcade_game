@@ -1,6 +1,6 @@
 import random
 
-from sources.utils import createParticleBurst
+from utils.utils import createParticleBurst
 
 
 class Page8Burst():
@@ -13,19 +13,19 @@ class Page8Burst():
     def __createBurst(self, x, y):
         params = {
             "position": (x, y),
-            "filePath": "images/items/star.png",
+            "filePath": "projects/demo/images/items/star.png",
             "spriteBox": (1, 1, 128, 128),
             "spriteSelect": (0, 0),
 
             "partSize": 128,
             "partScale": 2.0,
-            "partSpeed": 5.0,
+            "partSpeed": 10.0,
             "filterColor": (255, 255, 255, 255),
             "startAlpha": 100,
-            "endAlpha": 25,
+            "endAlpha": 50,
 
-            "partInterval": 0.05,
-            "totalDuration": 0.4,
+            "partInterval": 0.016,
+            "totalDuration": 0.2,
         }
         burst = createParticleBurst(params)
         self.bursts.append(burst)

@@ -1,4 +1,4 @@
-from sources.utils import createFixedSprite
+from projects.demo import createFixedSprite
 
 
 class Ship():

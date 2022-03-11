@@ -1,4 +1,4 @@
-from sources.utils import createParticleEmitter
+from utils.utils import createParticleEmitter
 
 
 class Page7Emitter():
@@ -12,7 +12,7 @@ class Page7Emitter():
         # PARTICLE EMITTER
         params = {
             "position" : (self.W/2, self.H/2),
-            "filePath": "images/items/star.png",
+            "filePath": "projects/demo/images/items/star.png",
             "spriteBox": (1, 1, 128, 128),
             "spriteSelect": (0, 0),
 

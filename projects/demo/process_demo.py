@@ -3,16 +3,16 @@
 ### ====================================================================================================
 import arcade
 
-from projects.shmup.cygame_splash   import CyGameSplash
-from sources.pages.page_1_home      import Page1Home
-from sources.pages.page_2_sprite    import Page2Sprite
-from sources.pages.page_3_anim      import Page3Anim
-from sources.pages.page_4_multisprite import Page4Multi
-from sources.pages.page_5_rotation  import Page5Rotation
-from sources.pages.page_6_move      import Page6Move
-from sources.pages.page_7_emitter   import Page7Emitter
-from sources.pages.page_20_parallax import Page20Parallax
-from sources.pages.page_8_burst     import Page8Burst
+from projects.demo.pages.page_1_home                import Page1Home
+from projects.demo.pages.page_2_sprite              import Page2Sprite
+from projects.demo.pages.page_3_anim                import Page3Anim
+from projects.demo.pages.page_4_multisprite         import Page4Multi
+from projects.demo.pages.page_5_rotation            import Page5Rotation
+from projects.demo.pages.page_6_move                import Page6Move
+from projects.demo.pages.page_7_emitter             import Page7Emitter
+from projects.demo.pages.page_8_burst               import Page8Burst
+from projects.demo.pages.page_9_collisions   import Page9Collisions
+from projects.demo.pages.page_20_parallax           import Page20Parallax
 
 
 class Process:
@@ -20,8 +20,8 @@ class Process:
     ### ====================================================================================================
     ### PARAMETERS
     ### ====================================================================================================
-    SCREEN_WIDTH  = int(1920*0.75)
-    SCREEN_HEIGHT = int(1080*0.75)
+    SCREEN_WIDTH  = int(1280*0.75)
+    SCREEN_HEIGHT = int(1024*0.75)
 
 
     ### ====================================================================================================
@@ -46,6 +46,7 @@ class Process:
         self.pages.append(Page6Move     (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pages.append(Page7Emitter  (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pages.append(Page8Burst    (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        self.pages.append(Page9Collisions(self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pages.append(Page20Parallax(self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
 
         # Set first page

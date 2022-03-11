@@ -1,4 +1,4 @@
-from sources.utils import createAnimatedSprite
+from utils.utils import createAnimatedSprite
 
 
 class Page4Multi():
@@ -11,9 +11,9 @@ class Page4Multi():
     def setup(self):
         # ANIMATED SPRITE
         params = {
-            "filePath"     : "images/fonts/font1.png",
+            "filePath"     : "projects/demo/images/fonts/font1.png",
             "spriteBox"    : (8, 5, 30, 40),
-            "size"         : (60,80),
+            "size"         : (self.W/8,self.H/8),
             "position"     : (self.W//2, self.H//2),
             "startIndex"   : 26,
             "endIndex"     : 35,
@@ -23,9 +23,9 @@ class Page4Multi():
         }
         self.digits = []
         self.digits.append(createAnimatedSprite(params))
-        params["position"] = (self.W//2+60, self.H//2)
+        params["position"] = (self.W//2-self.W/15, self.H//2)
         self.digits.append(createAnimatedSprite(params))
-        params["position"] = (self.W//2+120, self.H//2)
+        params["position"] = (self.W//2+self.W/15, self.H//2)
         self.digits.append(createAnimatedSprite(params))
         self.count = 0
 

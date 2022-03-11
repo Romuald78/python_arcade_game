@@ -1,5 +1,4 @@
-from sources.utils import  *
-import math
+from utils.utils import  *
 
 
 class Chicken():
@@ -12,7 +11,7 @@ class Chicken():
         self.dx    = 1
         self.k    = 0.965
         params = {
-            "filePath": "images/characters/chicken.png",
+            "filePath": "projects/demo/images/characters/chicken.png",
             "spriteBox": (4, 4, 192, 192),
             "position" : (-200,75),
             "startIndex":0,
@@ -24,7 +23,7 @@ class Chicken():
         params["flipH"] = True
         self.chickenL = createAnimatedSprite(params)
         params = {
-            "filePath": "images/characters/chicken.png",
+            "filePath": "projects/demo/images/characters/chicken.png",
             "spriteBox": (4, 4, 192, 192),
             "position" : (250,self.H + 500),
             "startIndex":8,

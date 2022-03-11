@@ -1,6 +1,6 @@
 
 
-from sources.utils import createFixedSprite
+from utils.utils import createFixedSprite
 
 
 class Page20Parallax():
@@ -14,14 +14,14 @@ class Page20Parallax():
         self.layers = []
         for layer in range(4,-1,-1):
             params = {
-                "filePath": f"images/parallax/city2/city2_{layer}.png",
+                "filePath": f"projects/demo/images/parallax/city2/city2_{layer}.png",
                 "size"    : (self.W, self.H),
                 "position": (0,300),
                 "filterColor": (255, 255, 255, 255),
                 "flipH": False,
             }
             if layer == 1:
-                params["filterColor"] = (128,128,128,255)
+#                params["filterColor"] = (160,160,160,255)
                 params["position"] = (0,300)
             if layer == 2:
                 params["position"] = (0,325)

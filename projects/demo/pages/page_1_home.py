@@ -1,6 +1,6 @@
-from sources.classes.Chicken import Chicken
-from sources.classes.Gems import Star
-from sources.utils import *
+from projects.demo.classes.Chicken import Chicken
+from projects.demo.classes.Gems import Star
+from utils.utils import *
 
 
 class Page1Home():
@@ -13,32 +13,35 @@ class Page1Home():
     def setup(self):
         # PYTHONS
         params = {
-            "filePath"   : "images/misc/arcade.png",
+            "filePath"   : "projects/demo/images/misc/arcade.png",
             "position"   : (115,115),
-            "filterColor": (255,255,255,96),
+            "size" : (self.W//4, self.H//4),
+            "filterColor": (255,255,255,128),
             "flipH" : True,
         }
         self.arcadeL  = createFixedSprite(params)
         params = {
-            "filePath"   : "images/misc/arcade.png",
+            "filePath"   : "projects/demo/images/misc/arcade.png",
             "position"   : (self.W-115,self.H-115),
-            "filterColor": (255,255,255,96),
+            "size": (self.W // 4, self.H // 4),
+            "filterColor": (255,255,255,128),
         }
         self.arcadeR  = createFixedSprite(params)
         # BACKGROUND
         params = {
-            "filePath"   : "images/misc/background_cytech.jpg",
+            "filePath"   : "projects/demo/images/misc/background_cytech.jpg",
             "position"   : (self.W//2,self.H//2),
             "size"       : (self.W,self.H),
-            "filterColor": (128,200,255,128),
+            "isMaxRatio"   : True,
+            "filterColor": (160,220,255,160),
         }
         self.back = createFixedSprite(params)
         # CY TECH LOGO
         params = {
-            "filePath"   : "images/misc/cytech.png",
+            "filePath"   : "projects/demo/images/misc/cytech.png",
             "position"   : (self.W//2,self.H//2),
-            "size"       : (310*2,163*2),
-            "filterColor": (255,255,255,160),
+            "size"       : (self.W//3,self.W//4),
+            "filterColor": (255,255,255,192),
         }
         self.cytech = createFixedSprite(params)
         # PARTICLE EMITTER

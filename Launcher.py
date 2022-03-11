@@ -2,7 +2,8 @@
 ### IMPORTS
 ### ====================================================================================================
 import arcade
-from shmup_process import Process
+#from projects.shmup.process_shmup import Process
+from projects.demo.process_demo import Process
 import os
 
 
@@ -68,6 +69,8 @@ class MyGame(arcade.Window):
         self.set_fullscreen(not self.fullscreen)
         if self.fullscreen:
             winW, winH = self.get_size()
+            print(winW, winH)
+
             ratioX = self.process.SCREEN_WIDTH / winW
             ratioY = self.process.SCREEN_HEIGHT / winH
             ratio = max(ratioX, ratioY)
@@ -78,7 +81,6 @@ class MyGame(arcade.Window):
             self.set_viewport(x0, finalW+x0, y0, finalH+y0)
         else:
             self.set_viewport(0, self.process.SCREEN_WIDTH, 0, self.process.SCREEN_HEIGHT)
-
 
     # ----------------------------------
     # CONSTRUCTOR

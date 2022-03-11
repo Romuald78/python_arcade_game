@@ -1,8 +1,6 @@
 import math
 
-import arcade.key
-
-from sources.utils import createFixedSprite, rotate
+from utils.utils import createFixedSprite, rotate
 
 
 class CyGameSplash():

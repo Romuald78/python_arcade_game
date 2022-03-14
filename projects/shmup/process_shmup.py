@@ -1,7 +1,10 @@
 ### ====================================================================================================
 ### IMPORTS
 ### ====================================================================================================
+import arcade.key
 
+from projects.shmup.classes.constants import Constants
+from projects.shmup.pages.cygame_ingame import CyGameInGame
 from projects.shmup.pages.cygame_splash import CyGameSplash
 
 
@@ -10,8 +13,8 @@ class Process:
     ### ====================================================================================================
     ### PARAMETERS
     ### ====================================================================================================
-    SCREEN_WIDTH  = int(1280*0.75)
-    SCREEN_HEIGHT = int(1024*0.75)
+    SCREEN_WIDTH  = int(1920*0.90) #int(1280*0.75)
+    SCREEN_HEIGHT = int(1080*0.90) #int(1024*0.75)
 
 
     def selectPage(self, pageIndex):
@@ -32,6 +35,7 @@ class Process:
     def setup(self):
         self.pages = []
         self.pages.append(CyGameSplash(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, self))
+        self.pages.append(CyGameInGame(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, self))
         # Set first page
         self.pageIndex = 0
         self.currentPage = self.pages[self.pageIndex]
@@ -59,10 +63,28 @@ class Process:
     ### key is taken from : arcade.key.xxx
     ### ====================================================================================================
     def onKeyEvent(self,key,isPressed):
-        # transfer event to page if needed
-        check = callable(getattr(self.currentPage, 'onKeyEvent', None))
-        if check:
-            self.currentPage.onKeyEvent(key, isPressed)
+        # convert keyboard to gamepad (both buttons and axis)
+        if key == arcade.key.LEFT:
+            self.onAxisEvent(Constants.KEYBOARD_CTRLID, "X", [0,-1][isPressed])
+        elif key == arcade.key.RIGHT:
+            self.onAxisEvent(Constants.KEYBOARD_CTRLID, "X", [0,1][isPressed])
+        elif key == arcade.key.UP:
+            self.onAxisEvent(Constants.KEYBOARD_CTRLID, "Y", [0, -1][isPressed])
+        elif key == arcade.key.DOWN:
+            self.onAxisEvent(Constants.KEYBOARD_CTRLID, "Y", [0, 1][isPressed])
+        elif key == arcade.key.R:
+            self.onButtonEvent(Constants.KEYBOARD_CTRLID, "A", isPressed)
+        elif key == arcade.key.E:
+            self.onButtonEvent(Constants.KEYBOARD_CTRLID, "B", isPressed)
+        elif key == arcade.key.ENTER:
+            self.onButtonEvent(Constants.KEYBOARD_CTRLID, "MENU", isPressed)
+
+
+
+        ## transfer event to page if needed
+        #check = callable(getattr(self.currentPage, 'onKeyEvent', None))
+        #if check:
+        #    self.currentPage.onKeyEvent(key, isPressed)
 
 
     ### ====================================================================================================

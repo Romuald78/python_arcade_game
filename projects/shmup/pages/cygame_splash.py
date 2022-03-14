@@ -124,7 +124,8 @@ class CyGameSplash():
 
         # if ready to go to game
         if self.state == self.STATE_GAME:
-            print("@@@@@@@")
+            print("LAUNCH IN-GAME")
+            self.manager.selectPage(1)
 
         # Move ships and Set frame pos to ship pos
         for i in range(len(self.frames)):
@@ -158,7 +159,7 @@ class CyGameSplash():
                 self.ships[i].center_y = y1
             elif self.state == self.STATE_FLY and self.players[i]["ctrlID"] != -1:
                 # Move the ships RIGHT
-                self.ships[i].center_x = self.ships[i].center_x * 0.98 + 0.02 * self.W*2
+                self.ships[i].center_x = self.ships[i].center_x * 0.99 + 0.01 * self.W*2
 
             # Set filter color
             if self.__isShipSelected(i+1):
@@ -284,8 +285,9 @@ class CyGameSplash():
         self.title.draw()
         if self.time%2 > 1.0 and self.state == self.STATE_IDLE:
             self.pressStart.draw()
-        for frame in self.frames:
-            frame.draw()
+        if self.state != self.STATE_FLY:
+            for frame in self.frames:
+                frame.draw()
         for ship in self.ships:
             ship.draw()
 
@@ -293,7 +295,6 @@ class CyGameSplash():
         pass
 
     def registerCtrl(self, ctrlID):
-        print(self.players)
         for i in range(len(self.players)):
             if self.players[i]["ctrlID"] == ctrlID:
                 # already registered

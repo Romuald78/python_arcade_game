@@ -2,8 +2,8 @@
 ### IMPORTS
 ### ====================================================================================================
 import arcade
-#from projects.shmup.process_shmup import Process
-from projects.demo.process_demo import Process
+from projects.shmup.process_shmup import Process
+#from projects.demo.process_demo import Process
 import os
 
 
@@ -187,8 +187,8 @@ class MyGame(arcade.Window):
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def onCrossMove(self, gamepadNum, xValue, yValue):
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
-        self.process.onAxisEvent(gamepadNum, "x", xValue)
-        self.process.onAxisEvent(gamepadNum, "y", yValue)
+        self.process.onAxisEvent(gamepadNum, "X", xValue)
+        self.process.onAxisEvent(gamepadNum, "Y", yValue)
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
 

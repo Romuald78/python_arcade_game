@@ -1,4 +1,4 @@
-from utils.utils import createFixedSprite
+from utils.gfx_sfx import createFixedSprite
 
 
 class Page2Sprite():
@@ -21,6 +21,17 @@ class Page2Sprite():
             "flipV"      : False,
         }
         self.back = createFixedSprite(params)
+        params = {
+            "filePath"   : "projects/demo/images/characters/penguin_fix.png",
+            "position"   : (self.W//1.5,self.H//3),
+            # ----------------------------------------
+            "size"       : (self.W//4,self.H//4),
+            "isMaxRatio" : True,
+            "filterColor": (255,255,255,255),
+            "flipH"      : True,
+            "flipV"      : False,
+        }
+        self.penguin = createFixedSprite(params)
 
 
     def update(self,deltaTime):
@@ -28,3 +39,4 @@ class Page2Sprite():
 
     def draw(self):
         self.back.draw()
+        self.penguin.draw()

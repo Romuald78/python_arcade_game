@@ -1,4 +1,4 @@
-from utils.utils import  *
+from utils.gfx_sfx import  *
 
 
 class Chicken():

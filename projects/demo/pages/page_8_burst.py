@@ -1,6 +1,6 @@
 import random
 
-from utils.utils import createParticleBurst
+from utils.gfx_sfx import createParticleBurst
 
 
 class Page8Burst():

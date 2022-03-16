@@ -4,7 +4,8 @@
 import arcade
 
 from projects.demo.pages.page_1_home                import Page1Home
-from projects.demo.pages.page_2_sprite              import Page2Sprite
+from projects.demo.pages.page_2a_sprite              import Page2Sprite
+from projects.demo.pages.page_2b_filtercolor import Page2bColor
 from projects.demo.pages.page_3_anim                import Page3Anim
 from projects.demo.pages.page_4_multisprite         import Page4Multi
 from projects.demo.pages.page_5_rotation            import Page5Rotation
@@ -40,6 +41,7 @@ class Process:
 
         self.pages.append(Page1Home     (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pages.append(Page2Sprite   (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        self.pages.append(Page2bColor   (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pages.append(Page3Anim     (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pages.append(Page4Multi    (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pages.append(Page5Rotation (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))

@@ -1,9 +1,6 @@
-import random
-
 import arcade.key
-
-from utils.utils import createFixedSprite, collision2Circles, collisionPointAABB, collision2AABB, collisionCircleAABB
-
+from utils.collisions import collision2Circles, collisionPointAABB, collision2AABB, collisionCircleAABB
+from utils.gfx_sfx import createFixedSprite
 
 class Page9Collisions():
 

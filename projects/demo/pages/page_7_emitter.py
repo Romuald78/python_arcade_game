@@ -1,4 +1,4 @@
-from utils.utils import createParticleEmitter
+from utils.gfx_sfx import createParticleEmitter
 
 
 class Page7Emitter():

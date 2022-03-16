@@ -1,6 +1,6 @@
 
 
-from utils.utils import createFixedSprite
+from utils.gfx_sfx import createFixedSprite
 
 
 class Page20Parallax():

@@ -197,7 +197,7 @@ class MyGame(arcade.Window):
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def onAxisMove(self, gamepadNum, axisName, analogValue):
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
-        if axisName == "z":
+        if axisName != "x":
             analogValue = -analogValue
         self.process.onAxisEvent(gamepadNum,axisName.upper(),analogValue)
         #- - - - - - - - - - - - - - - - - - - - - - - - -#

@@ -17,9 +17,12 @@ class Process:
     SCREEN_HEIGHT = int(1080*0.90) #int(1024*0.75)
 
 
-    def selectPage(self, pageIndex):
+    def selectPage(self, pageIndex, params=None):
         self.pageIndex = pageIndex
         self.currentPage = self.pages[self.pageIndex]
+        if params is not None:
+            self.currentPage.setup(params)
+
 
 
     ### ====================================================================================================
@@ -69,9 +72,9 @@ class Process:
         elif key == arcade.key.RIGHT:
             self.onAxisEvent(Constants.KEYBOARD_CTRLID, "X", [0,1][isPressed])
         elif key == arcade.key.UP:
-            self.onAxisEvent(Constants.KEYBOARD_CTRLID, "Y", [0, -1][isPressed])
-        elif key == arcade.key.DOWN:
             self.onAxisEvent(Constants.KEYBOARD_CTRLID, "Y", [0, 1][isPressed])
+        elif key == arcade.key.DOWN:
+            self.onAxisEvent(Constants.KEYBOARD_CTRLID, "Y", [0, -1][isPressed])
         elif key == arcade.key.R:
             self.onButtonEvent(Constants.KEYBOARD_CTRLID, "A", isPressed)
         elif key == arcade.key.E:

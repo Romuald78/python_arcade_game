@@ -1,4 +1,4 @@
-from utils.utils import createAnimatedSprite
+from utils.gfx_sfx import createAnimatedSprite
 from random import randint
 
 

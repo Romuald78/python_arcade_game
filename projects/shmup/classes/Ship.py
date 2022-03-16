@@ -1,4 +1,4 @@
-from projects.demo import createFixedSprite
+from utils.gfx_sfx import createFixedSprite
 
 
 class Ship():
@@ -9,6 +9,8 @@ class Ship():
         # init positions
         self.x = position[0]
         self.y = position[1]
+        self.mX = 0
+        self.mY = 0
         # Load all needed sprites
         params = {
             "filePath": f"projects/shmup/images/ships/ship0{self.index}.png",
@@ -31,13 +33,36 @@ class Ship():
         params["filePath"] = f"projects/shmup/images/ships/ship123.png"
         self.ships["123"] = createFixedSprite(params)
 
+    @property
+    def center_x(self):
+        return self.x
+    @property
+    def center_y(self):
+        return self.y
+
+    @center_x.setter
+    def center_x(self, x):
+        self.x = x
+    @center_y.setter
+    def center_y(self, y):
+        self.y = y
+
+    def moveX(self, mx):
+        self.mX = mx
+    def moveY(self, my):
+        self.mY = my
+
+
+
+
     def update(self, deltaTime):
-        # Put the current ship at the correct position
-        #self.ships[self.index].center_x = self.x
-        #self.ships[self.index].center_y = self.y
-        pass
+        # Move ship
+        self.x += self.mX * deltaTime
+        self.y += self.mY * deltaTime
 
     def draw(self):
+        self.ships[self.index].center_x = self.x
+        self.ships[self.index].center_y = self.y
         self.ships[self.index].draw()
 
     def mergeWith(self, index):

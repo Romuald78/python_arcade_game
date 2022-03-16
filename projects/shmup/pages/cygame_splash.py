@@ -1,6 +1,7 @@
 import math
 
-from utils.utils import createFixedSprite, rotate
+from utils.gfx_sfx import createFixedSprite
+from utils.trigo import rotate
 
 
 class CyGameSplash():
@@ -125,7 +126,12 @@ class CyGameSplash():
         # if ready to go to game
         if self.state == self.STATE_GAME:
             print("LAUNCH IN-GAME")
-            self.manager.selectPage(1)
+            # prepare player config
+            playerConfig = []
+            for p in self.players:
+                if p["ctrlID"] != -1:
+                    playerConfig.append(p)
+            self.manager.selectPage(1, playerConfig)
 
         # Move ships and Set frame pos to ship pos
         for i in range(len(self.frames)):
@@ -371,18 +377,6 @@ class CyGameSplash():
                             self.players[i]["lastY"] = 0
                         # step DOWN
                         if analogValue <= -0.5 < prevY:
-                            j = i-1
-                            while j >= 0:
-                                if self.players[j]["ctrlID"] == -1:
-                                    # swap
-                                    self.players[j]["ctrlID"] = self.players[i]["ctrlID"]
-                                    self.players[j]["lastY"]  = self.players[i]["lastY"]
-                                    self.players[i]["ctrlID"] = -1
-                                    return
-                                j -= 1
-                            break
-                        # step UP
-                        if prevY < 0.5 <= analogValue:
                             j = i+1
                             while j <= 2:
                                 if self.players[j]["ctrlID"] == -1:
@@ -392,4 +386,16 @@ class CyGameSplash():
                                     self.players[i]["ctrlID"] = -1
                                     return
                                 j += 1
+                            break
+                        # step UP
+                        if prevY < 0.5 <= analogValue:
+                            j = i-1
+                            while j >=0 :
+                                if self.players[j]["ctrlID"] == -1:
+                                    # swap
+                                    self.players[j]["ctrlID"] = self.players[i]["ctrlID"]
+                                    self.players[j]["lastY"]  = self.players[i]["lastY"]
+                                    self.players[i]["ctrlID"] = -1
+                                    return
+                                j -= 1
                             break

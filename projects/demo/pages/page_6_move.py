@@ -1,6 +1,6 @@
 import arcade.key
 
-from utils.utils import createAnimatedSprite, createFixedSprite
+from utils.gfx_sfx import createAnimatedSprite, createFixedSprite
 
 
 class Page6Move():

@@ -1,6 +1,6 @@
 from projects.demo.classes.Chicken import Chicken
 from projects.demo.classes.Gems import Star
-from utils.utils import *
+from utils.gfx_sfx import *
 
 
 class Page1Home():

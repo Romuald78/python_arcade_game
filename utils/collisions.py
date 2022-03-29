@@ -1,4 +1,7 @@
 
+import math
+
+
 # ===========================================================================
 # Function to check collisions between two circles
 # ===========================================================================
@@ -40,6 +43,7 @@ def collisionPointAABB( topLeft, bottomRight, pos ):
 def collisionPointCircle(center, radius, pos):
     return collision2Circles(center, radius, pos, 0)
 
+
 # ===========================================================================
 # Function to check collisions between one Circle and one AABB
 # ===========================================================================
@@ -80,3 +84,53 @@ def collisionCircleAABB( topLeft, bottomRight, center, radius ):
         return True
     # Ok there is no collision
     return False
+
+
+# ===========================================================================
+# Function to check collisions between one Ellipse and one AABB
+# ===========================================================================
+def collisionEllipseAABB( topLeft, bottomRight, center, radiusX, radiusY ):
+    x0, y1 = topLeft
+    x1, y0 = bottomRight
+    cx, cy = center
+    # change 2d space
+    x0 = (x0 - cx) / radiusX
+    x1 = (x1 - cx) / radiusX
+    y0 = (y0 - cy) / radiusY
+    y1 = (y1 - cy) / radiusY
+    return collisionCircleAABB((x0,y1), (x1,y0), (0,0), 1)
+
+# ===========================================================================
+# Function to check collisions between one Ellipse and one Circle
+# ===========================================================================
+def ellipsePointFromAngle(center, radiusX, radiusY, ang):
+    c = math.cos(ang)
+    s = math.sin(ang)
+    ta = s / c  ## tan(a)
+    tt = ta * radiusX / radiusY  ## tan(t)
+    d = 1. / math.sqrt(1. + tt * tt)
+    x = center[0] + math.copysign(radiusX * d, c)
+    y = center[1] - math.copysign(radiusY * tt * d, s)
+    return x, y
+
+def collisionCircleEllipse( center1, radius1, center2, radius2X, radius2Y ):
+    dx = center1[0] - center2[0]
+    dy = center1[1] - center2[1]
+    angle = math.atan2(-dy, dx)
+    x, y = ellipsePointFromAngle(center2, radius2X, radius2Y, angle)
+    distance  = math.hypot(x - center1[0], y - center1[1])
+    distance2 = math.hypot(center2[0] - center1[0], center2[1] - center1[1])
+    return distance <= radius1 or distance2 <= radius1
+
+# ===========================================================================
+# Function to check collisions between two Ellipses
+# ===========================================================================
+def collision2Ellipses(center1, rx1, ry1, center2, rx2, ry2):
+    cx1, cy1 = center1
+    cx2, cy2 = center2
+    # change 2d space
+    rx2 /= rx1
+    ry2 /= ry1
+    cx2 = (cx2 - cx1) / rx1
+    cy2 = (cy2 - cy1) / ry1
+    return collisionCircleEllipse( (0,0), 1, (cx2,cy2), rx2, ry2 )

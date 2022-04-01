@@ -114,22 +114,22 @@ class Blob():
 
     def __isNextStepOK(self, newX, newY, environment, bubbles, opponents):
         # Collisions with environment
-        if environment.isOvalColliding((newX, newY), self.radiusX, self.radiusY):
-            return False
+        if not environment.isOvalColliding((self.x, self.y), self.radiusX, self.radiusY):
+            if environment.isOvalColliding((newX, newY), self.radiusX, self.radiusY):
+                return False
         # Collisions with opponents
         for o in opponents:
             if o is not self:
-                if o.isOvalColliding((newX, newY), self.radiusX, self.radiusY):
-                    return False
+                # if we are already in collision, do not check
+                if not o.isOvalColliding((self.x, self.y), self.radiusX, self.radiusY):
+                    if o.isOvalColliding((newX, newY), self.radiusX, self.radiusY):
+                        return False
         # Collisions with bubbles
         for b in bubbles:
             # If we are already in collision, do not check future movement (allow movement)
             if not b.isOvalColliding((self.x, self.y), self.radiusX, self.radiusY):
-                self.color = self.initColor
                 if b.isOvalColliding((newX, newY), self.radiusX, self.radiusY):
                     return False
-            else:
-                self.color = (255, 255, 255, 255)
         # OK to move
         return True
 

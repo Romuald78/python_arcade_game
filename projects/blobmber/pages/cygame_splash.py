@@ -2,13 +2,8 @@ import math
 
 import arcade
 
-from projects.blobmber.classes.blocks import Blocks
-from projects.blobmber.classes.blob import Blob
-from projects.blobmber.classes.constants import Constants
-from utils.collisions import collisionCircleEllipse
+from projects.blobmber.classes.Word import Word
 from utils.gfx_sfx import createFixedSprite, createAnimatedSprite
-from utils.trigo import rotate
-
 
 class CyGameSplash():
 
@@ -19,81 +14,96 @@ class CyGameSplash():
         self.H = H
         self.manager = manager
 
+    def __moveBack(self):
+        T = 2*math.pi*self.time
+        xc = self.W/4
+        rx = self.W/19
+        self.bigTopLeft.center_x = math.cos(T/23)*rx + xc
+        xc = self.W/6
+        rx = self.W/23
+        self.bigTopMid.center_x = math.cos(T/29)*rx + xc
+        yc = self.H/10
+        ry = self.H/17
+        self.bottom.center_y = math.cos(T/19)*ry + yc
+        xc = 4*self.W/5
+        rx = self.W/17
+        yc = 10*self.H/11
+        ry = self.H/17
+        self.topRight.center_x = math.cos(T/17)*rx + xc
+        self.topRight.center_y = math.cos(T/13)*ry + yc
+        xc = self.W/6
+        rx = self.H/11
+        yc = self.H/6
+        ry = self.H/11
+        self.bottomLeft.center_x = math.cos(T/25)*rx + xc
+        self.bottomLeft.center_y = math.cos(T/41)*ry + yc
+
     def setup(self):
-        # key is ctrlID / Value is blob
-        self.blobs = {}
-        # list of blobs, sorted by Y
-        self.blobsY = []
-        w = self.W//8
-        h = self.H//8
-        # PLAYER 1
-        blob = Blob(self.W//2-90, self.H//2 + 50, w, h, Constants.BLOB_COLORS[0])
-        self.blobs[Constants.KEYBOARD_CTRLID1] = blob
-        self.blobsY.append(blob)
-        # PLAYER 2
-        blob = Blob(self.W//2-80, self.H//2 + 250, w, h, Constants.BLOB_COLORS[1])
-        self.blobs[Constants.KEYBOARD_CTRLID2] = blob
-        self.blobsY.append(blob)
-        # Rocks
-        self.blocks = Blocks(8, 6, w//2, w//2)
-        # bubbles
-        self.bubbles = []
+        self.time = 0
+        self.title = Word(self.W/5.5,self.H/5.5,"Blobber Man", self.W/12,self.W/12, (128,255,128,200))
+        self.title.center_x = self.W//11
+        self.title.center_y = self.H//1.25
+
+        params = {
+            "filePath": "projects/blobmber/images/big_lava_top_left.png",
+            "position": (self.W/4, self.H/2),
+            "size": (self.W/2, self.H),
+            "isMaxRatio" : True,
+            "filterColor": (255,0,0,160)
+        }
+        self.bigTopLeft = createFixedSprite(params)
+        params = {
+            "filePath": "projects/blobmber/images/big_lava_top_mid.png",
+            "position": (self.W/6, 3*self.H/4),
+            "size": (self.W/2, self.H/2),
+            "isMaxRatio" : True,
+            "filterColor": (0,0,255,160)
+        }
+        self.bigTopMid = createFixedSprite(params)
+        params = {
+            "filePath": "projects/blobmber/images/lava_bottom.png",
+            "position": (self.W / 1.5, self.H / 10),
+            "size": (self.W / 3, self.H / 3),
+            "isMaxRatio": True,
+            "filterColor": (0, 255, 255, 160)
+        }
+        self.bottom = createFixedSprite(params)
+        params = {
+            "filePath": "projects/blobmber/images/lava_top_right.png",
+            "position": (3*self.W/4, 10*self.H / 11),
+            "size": (self.W / 3, self.H / 3),
+            "isMaxRatio": True,
+            "filterColor": (255, 255, 0, 128)
+        }
+        self.topRight = createFixedSprite(params)
+        params = {
+            "filePath": "projects/blobmber/images/lava_bottom_left.png",
+            "position": (self.W/3, self.H / 3),
+            "size": (self.W / 2, self.H / 2),
+            "isMaxRatio": True,
+            "filterColor": (255, 0, 255, 128)
+        }
+        self.bottomLeft = createFixedSprite(params)
+
+
 
     def update(self,deltaTime):
-        # sort blobs by Y
-        self.blobsY = sorted(self.blobsY, key=lambda blb: -blb.center_y )
-        for blob in self.blobsY:
-            blob.update(deltaTime, self.blocks, self.bubbles, self.blobsY)
-        # Draw bubbles
-        for bub in self.bubbles:
-            bub.update(deltaTime)
-
-#        if collisionCircleEllipse((1000,400), 150,
-#                                  (self.blobs[Constants.KEYBOARD_CTRLID1].center_x,self.blobs[Constants.KEYBOARD_CTRLID1].center_y+Constants.BLOB_Y_OFFSET),
-#                                  self.blobs[Constants.KEYBOARD_CTRLID1].radiusX, self.blobs[Constants.KEYBOARD_CTRLID1].radiusY):
-#            self.blobs[Constants.KEYBOARD_CTRLID1].setColor( (255,255,255,255) )
-#        else:
-#            self.blobs[Constants.KEYBOARD_CTRLID1].setColor( (0,255,0,255) )
-
+        self.time += deltaTime
+        self.title.update(deltaTime)
+        self.__moveBack()
 
     def draw(self):
-        # Draw only blocks above players
-        self.blocks.draw()
-        # Draw bubbles
-        for bub in self.bubbles:
-            bub.draw()
-        # for all players draw player and blocks below
-        for i in range(len(self.blobs)):
-            self.blobsY[i].draw()
-
+        self.topRight.draw()
+        self.bigTopLeft.draw()
+        self.bigTopMid.draw()
+        self.bottom.draw()
+        self.bottomLeft.draw()
+        self.title.draw()
 
     def onKeyEvent(self, key, isPressed):
-        # Player 1
-        if arcade.key.LEFT == key:
-            self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.LEFT, isPressed)
-        if arcade.key.RIGHT == key:
-            self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.RIGHT, isPressed)
-        if arcade.key.UP == key:
-            self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.UP, isPressed)
-        if arcade.key.DOWN == key:
-            self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.DOWN, isPressed)
-        if arcade.key.SPACE == key and isPressed:
-            self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID1].dropBubble() )
-        # Player 2
-        if arcade.key.Q == key:
-            self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.LEFT, isPressed)
-        if arcade.key.D == key:
-            self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.RIGHT, isPressed)
-        if arcade.key.Z == key:
-            self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.UP, isPressed)
-        if arcade.key.S == key:
-            self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.DOWN, isPressed)
-        if arcade.key.LCTRL == key and isPressed:
-            self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID2].dropBubble() )
+        if isPressed:
+            self.title.center_y = self.H/0.75
 
     def onButtonEvent(self, gamepadNum, buttonName, isPressed):
-        pass
-
-    def onAxisEvent(self, gamepadNum, axisName, analogValue):
         pass
 

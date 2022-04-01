@@ -22,11 +22,14 @@ class Blocks():
         rock = createFixedSprite(params)
         return rock
 
-    def __init__(self, nbX, nbY, w, h):
+    def __init__(self, nbX, nbY, w, h, fullW, fullH):
+        # compute X, Y offsets
+        ofX = (fullW - nbX*w)/2
+        ofY = (fullH - nbY*h)/2
         self.rocks = arcade.SpriteList()
-        for x in range(0,nbX):
-            for y in range(0,nbY):
-                rock = self.__createBlock((Constants.BLOCKS_W_PADDING*x+0.5)*w, (Constants.BLOCKS_H_PADDING*y+0.5)*h, w, h, (255,255,255,255))
+        for x in range(0,nbX,2):
+            for y in range(0,nbY,2):
+                rock = self.__createBlock((x+0.5)*w + ofX, (y+0.5)*h + ofY, w, h, (255,255,255,255))
                 self.rocks.append( rock )
 
     def draw(self):

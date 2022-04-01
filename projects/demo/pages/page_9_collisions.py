@@ -1,8 +1,17 @@
 import arcade.key
-from utils.collisions import collision2Circles, collisionPointAABB, collision2AABB, collisionCircleAABB
+from utils.collisions import collision2Circles, collisionPointAABB, collision2AABB, collisionCircleAABB, \
+    collisionCircleEllipse, collisionEllipseAABB, collision2Ellipses
 from utils.gfx_sfx import createFixedSprite
 
 class Page9Collisions():
+
+    STATE_CIRCLE_CIRCLE   = 0
+    STATE_CIRCLE_SQUARE   = 1
+    STATE_SQUARE_SQUARE   = 2
+    STATE_ELLIPSE_CIRCLE  = 3
+    STATE_ELLIPSE_SQUARE  = 4
+    STATE_ELLIPSE_ELLIPSE = 5
+    NB_STATES             = 6
 
     def __init__(self, W, H):
         super().__init__()
@@ -11,101 +20,136 @@ class Page9Collisions():
 
     def setup(self):
         # PYTHONS
-        self.radius1 = self.W/9
-        self.radius2 = 100
-        params = {
-            "filePath": "projects/demo/images/misc/colorsquare.png",
-            "position": (self.W - self.radius1, self.H // 2),
-            "size": (self.radius1*2, self.radius1*2),
-            "filterColor": (255, 255, 255, 64)
-        }
-        self.bg = createFixedSprite(params)
+        self.rU = self.W / 10
+        self.rC = 2*self.rU
 
+        # =====================================================
+        # user shapes
+        # =====================================================
         params = {
             "filePath": "projects/demo/images/misc/green_circle.png",
-            "position": (self.radius1, self.H // 2),
-            "size"       : (self.radius1*2, self.radius1*2),
-            "filterColor": (255, 255, 255, 255)
+            "position": (self.W//2, self.H // 2),
+            "size"       : (self.rU*2, self.rU*2),
+            "filterColor": (255, 255, 255, 160)
         }
-        self.green = createFixedSprite(params)
-
+        self.userCircle = createFixedSprite(params)
         params = {
             "filePath": "projects/demo/images/misc/colorsquare.png",
-            "position": (self.W // 2, self.H // 4),
-            "size": (self.radius1*2, self.radius1*2),
-            "filterColor": (255, 255, 255, 64)
+            "position": (self.W // 2, self.H // 2),
+            "size": (self.rU*2, self.rU*2),
+            "filterColor": (255, 255, 255, 160)
         }
-        self.bg2 = createFixedSprite(params)
+        self.userSquare = createFixedSprite(params)
+        params = {
+            "filePath": "projects/demo/images/misc/ellipse.png",
+            "position": (self.W // 2, self.H // 2),
+            "size": (self.rU*2, self.rU),
+            "filterColor": (255, 255, 255, 160)
+        }
+        self.userEllipse = createFixedSprite(params)
 
+
+        # =====================================================
+        # collisions shapes
+        # =====================================================
         params = {
             "filePath": "projects/demo/images/misc/blue_circle.png",
             "position": (self.W // 2, self.H // 2),
-            "size"       : (self.radius2*2, self.radius2*2),
-            "filterColor": (255, 255, 255, 160)
+            "size"       : (self.rC*2, self.rC*2),
+            "filterColor": (255, 255, 255, 255)
         }
-        self.blue = createFixedSprite(params)
-
+        self.circle = createFixedSprite(params)
         params = {
             "filePath": "projects/demo/images/misc/colorsquare.png",
             "position": (self.W // 2, self.H // 2),
-            "size"       : (self.radius2*2, self.radius2*2),
+            "size"       : (self.rC*2, self.rC*2),
+            "filterColor": (255, 255, 255, 255)
+        }
+        self.square = createFixedSprite(params)
+        params = {
+            "filePath": "projects/demo/images/misc/ellipse.png",
+            "position": (self.W // 2, self.H // 2),
+            "size": (self.rC*2, self.rC),
             "filterColor": (255, 255, 255, 160)
         }
-        self.blue2 = createFixedSprite(params)
+        self.ellipse = createFixedSprite(params)
 
-        self.shape = False
-        self.colliding1 = False
-        self.colliding2 = False
-        self.colliding3 = False
+        self.state = 0
+        self.colliding = False
+        self.x = 0
+        self.y = 0
 
 
     def update(self,deltaTime):
-        # Circle collisions
-        self.colliding1 = collision2Circles((self.blue.center_x, self.blue.center_y), self.radius2,
-                                            (self.green.center_x, self.green.center_y), self.radius1)
-        # Square collisions
-        tl1 = (self.blue2.center_x - self.radius2, self.blue2.center_y + self.radius2)
-        br1 = (self.blue2.center_x + self.radius2, self.blue2.center_y - self.radius2)
-        tl2 = (self.bg.center_x   - self.radius1, self.bg.center_y   + self.radius1)
-        br2 = (self.bg.center_x   + self.radius1, self.bg.center_y   - self.radius1)
-        self.colliding2 = collision2AABB(tl1, br1, tl2, br2)
+        # update positions
+        self.userCircle.center_x  = self.x
+        self.userCircle.center_y  = self.y
+        self.userSquare.center_x  = self.x
+        self.userSquare.center_y  = self.y
+        self.userEllipse.center_x  = self.x
+        self.userEllipse.center_y  = self.y
 
-        tl3 = (self.bg2.center_x   - self.radius1, self.bg2.center_y   + self.radius1)
-        br3 = (self.bg2.center_x   + self.radius1, self.bg2.center_y   - self.radius1)
-        center3 = (self.blue.center_x, self.blue.center_y)
-        self.colliding3 = collisionCircleAABB( tl3, br3, center3, self.radius2 )
 
-        if self.colliding1:
-            self.green.color = (255,255,255,255)
+        if self.state == self.STATE_CIRCLE_CIRCLE:
+            self.colliding = collision2Circles((self.x, self.y), self.rU, (self.W//2, self.H//2), self.rC)
+        elif self.state == self.STATE_CIRCLE_SQUARE:
+            tl3 = (self.W//2 - self.rC, self.H//2 + self.rC)
+            br3 = (self.W//2 + self.rC, self.H//2 - self.rC)
+            center3 = (self.x, self.y)
+            self.colliding = collisionCircleAABB(tl3, br3, center3, self.rU)
+        elif self.state == self.STATE_SQUARE_SQUARE:
+            tl1 = (self.x - self.rU, self.y + self.rU)
+            br1 = (self.x + self.rU, self.y - self.rU)
+            tl2 = (self.W//2 - self.rC, self.H//2 + self.rC)
+            br2 = (self.W//2 + self.rC, self.H//2 - self.rC)
+            self.colliding = collision2AABB(tl1, br1, tl2, br2)
+        elif self.state == self.STATE_ELLIPSE_CIRCLE:
+            self.colliding = collisionCircleEllipse((self.W//2, self.H//2), self.rC, (self.x, self.y), self.rU, self.rU/2)
+        elif self.state == self.STATE_ELLIPSE_SQUARE:
+            tl3 = (self.W // 2 - self.rC, self.H // 2 + self.rC)
+            br3 = (self.W // 2 + self.rC, self.H // 2 - self.rC)
+            self.colliding = collisionEllipseAABB(tl3, br3, (self.x, self.y), self.rU, self.rU/2)
+        elif self.state == self.STATE_ELLIPSE_ELLIPSE:
+            self.colliding = collision2Ellipses((self.W//2, self.H//2), self.rC, self.rC/2, (self.x, self.y), self.rU, self.rU/2)
+
+
+        if self.colliding:
+            self.circle.color = (255, 255, 255, 255)
+            self.square.color = (255, 255, 255, 255)
+            self.ellipse.color = (255, 255, 255, 255)
         else:
-            self.green.color = (255, 255, 255, 128)
-        if self.colliding2:
-            self.bg.color = (255,255,255,255)
-        else:
-            self.bg.color = (255, 255, 255, 128)
-        if self.colliding3:
-            self.bg2.color = (255,255,255,255)
-        else:
-            self.bg2.color = (255, 255, 255, 128)
+            self.circle.color = (255, 255, 255, 64)
+            self.square.color = (255, 255, 255, 64)
+            self.ellipse.color = (255, 255, 255, 64)
 
     def draw(self):
-        self.green.draw()
-        self.bg.draw()
-        self.bg2.draw()
-        # Collision with blue SQUARE
-        if self.shape:
-            self.blue2.draw()
-        # Collision with blue CIRCLE
-        else:
-            self.blue.draw()
+        if self.state == self.STATE_CIRCLE_CIRCLE:
+            self.circle.draw()
+            self.userCircle.draw()
+
+        elif self.state == self.STATE_CIRCLE_SQUARE:
+            self.square.draw()
+            self.userCircle.draw()
+
+        elif self.state == self.STATE_SQUARE_SQUARE:
+            self.square.draw()
+            self.userSquare.draw()
+        elif self.state == self.STATE_ELLIPSE_CIRCLE:
+            self.circle.draw()
+            self.userEllipse.draw()
+        elif self.state == self.STATE_ELLIPSE_SQUARE:
+            self.square.draw()
+            self.userEllipse.draw()
+        elif self.state == self.STATE_ELLIPSE_ELLIPSE:
+            self.ellipse.draw()
+            self.userEllipse.draw()
 
     def onKeyEvent(self, key ,isPressed):
         if key == arcade.key.SPACE and isPressed:
-            self.shape = not self.shape
+            self.state = (self.state+1) % self.NB_STATES
+
 
     def onMouseMotionEvent(self, x, y, dx, dy):
-        self.blue.center_x  = x
-        self.blue.center_y  = y
-        self.blue2.center_x = x
-        self.blue2.center_y = y
+        self.x = x
+        self.y = y
 

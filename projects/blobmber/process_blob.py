@@ -3,8 +3,9 @@
 ### ====================================================================================================
 import arcade.key
 
+from projects.blobmber.classes.constants import Constants
+from projects.blobmber.pages.cygame_load import CyGameLoad
 from projects.blobmber.pages.cygame_splash import CyGameSplash
-from projects.shmup.classes.constants import Constants
 from projects.blobmber.pages.cygame_ingame import CyGameInGame
 
 
@@ -14,11 +15,11 @@ class Process:
     ### PARAMETERS
     ### ====================================================================================================
 
-    SCREEN_WIDTH  = int(1280*0.75) # int(1920*0.75)
-    SCREEN_HEIGHT = int(1024*0.75) # int(1080*0.75)
-    CELL_SIZE = min(SCREEN_WIDTH/17, SCREEN_HEIGHT/9.5)
-    NB_CELL_X = int(SCREEN_WIDTH/CELL_SIZE)
-    NB_CELL_Y = int(SCREEN_WIDTH/CELL_SIZE)
+    SCREEN_HEIGHT = 1000                             #int(1024*0.75) # int(1080*0.75)
+    SCREEN_WIDTH  = int(SCREEN_HEIGHT * 1280 / 1024) #int(1280*0.75) # int(1920*0.75)
+    CELL_SIZE = min(SCREEN_WIDTH/Constants.NB_CELLS_X, SCREEN_HEIGHT/Constants.NB_CELLS_Y)
+    NB_CELL_X = int(SCREEN_WIDTH/CELL_SIZE)+1
+    NB_CELL_Y = int(SCREEN_HEIGHT/CELL_SIZE)+1
 
     def selectPage(self, pageIndex, params=None):
         self.pageIndex = pageIndex
@@ -40,6 +41,7 @@ class Process:
     ### ====================================================================================================
     def setup(self):
         self.pages = []
+        self.pages.append(CyGameLoad(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, self))
         self.pages.append(CyGameSplash(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, self))
         self.pages.append(CyGameInGame(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, self.CELL_SIZE, self.NB_CELL_X, self.NB_CELL_Y, self))
         # Set first page

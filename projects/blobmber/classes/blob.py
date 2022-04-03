@@ -29,33 +29,33 @@ class Blob():
             "filePath": "projects/blobmber/images/blob.png",
             "position": (x, y),
             "size": (w, h),
-            "spriteBox": (6, 3, 256, 256),
+            "spriteBox": (8, 3, 384, 384),
             "frameDuration": Constants.BLOB_FRAME_SPEED,
             "startIndex": 0,
-            "endIndex": 5,
-            "flipH": False
+            "endIndex": 7,
+            "flipH": True
         }
         self.walks[Blob.DOWN] = createAnimatedSprite(params)
-        params["startIndex"] = 6
-        params["endIndex"] = 11
+        params["startIndex"] = 8
+        params["endIndex"] = 15
         self.walks[Blob.UP] = createAnimatedSprite(params)
-        params["startIndex"] = 12
-        params["endIndex"] = 17
+        params["startIndex"] = 16
+        params["endIndex"] = 23
         self.walks[Blob.LEFT] = createAnimatedSprite(params)
-        params["flipH"] = True
+        params["flipH"] = False
         self.walks[Blob.RIGHT] = createAnimatedSprite(params)
         # IDLES
         params["startIndex"] = 0
         params["endIndex"] = 0
-        params["flipH"] = False
-        self.idles[Blob.DOWN] = createAnimatedSprite(params)
-        params["startIndex"] = 6
-        params["endIndex"] = 6
-        self.idles[Blob.UP] = createAnimatedSprite(params)
-        params["startIndex"] = 12
-        params["endIndex"] = 12
-        self.idles[Blob.LEFT] = createAnimatedSprite(params)
         params["flipH"] = True
+        self.idles[Blob.DOWN] = createAnimatedSprite(params)
+        params["startIndex"] = 8
+        params["endIndex"] = 8
+        self.idles[Blob.UP] = createAnimatedSprite(params)
+        params["startIndex"] = 16
+        params["endIndex"] = 16
+        self.idles[Blob.LEFT] = createAnimatedSprite(params)
+        params["flipH"] = False
         self.idles[Blob.RIGHT] = createAnimatedSprite(params)
         # CURRENT
         self.currentAnim = self.idles[Blob.DOWN]

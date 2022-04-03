@@ -113,6 +113,8 @@ class MyGame(arcade.Window):
         # full screen config
         self.appW = None
         self.appH = None
+        # FPS counter
+        self.FPS = []
 
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -123,21 +125,24 @@ class MyGame(arcade.Window):
         self.process.setup()
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
 
-
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     #                               DRAW your game elements here
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def on_draw(self):
-        #- - - - - - - - - - - - - - - - - - - - - - - - -#
         arcade.start_render()
+        #- - - - - - - - - - - - - - - - - - - - - - - - -#
         self.process.draw()
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
+        arcade.draw_text(f"{int(60//sum(self.FPS))}",0,self.process.SCREEN_HEIGHT-15,arcade.color.WHITE)
 
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     #                                  UPDATE your game model here
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     def update(self, delta_time):
+        self.FPS.append(delta_time)
+        if len(self.FPS) > 60:
+            self.FPS = self.FPS[1:]
         #- - - - - - - - - - - - - - - - - - - - - - - - -#
         self.process.update(delta_time)
         #- - - - - - - - - - - - - - - - - - - - - - - - -#

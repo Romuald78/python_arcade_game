@@ -28,19 +28,33 @@ class CyGameInGame():
         # list of blobs, sorted by Y
         self.blobsY = []
         w = self.S
-        h = self.S
+        h = w
+        w2 = w * Constants.BLOB_SIZE_COEF
+        h2 = h * Constants.BLOB_SIZE_COEF
         # PLAYER 1
-        blob = Blob(self.W//2, self.H//2, w, h, Constants.BLOB_COLORS[0])
+        blob = Blob(self.W//2, self.H//2, w2, h2, Constants.BLOB_COLORS[0])
         self.blobs[Constants.KEYBOARD_CTRLID1] = blob
         self.blobsY.append(blob)
         # PLAYER 2
-        blob = Blob(self.W//2, self.H//2, w, h, Constants.BLOB_COLORS[1])
+        blob = Blob(self.W//2, self.H//2, w2, h2, Constants.BLOB_COLORS[1])
         self.blobs[Constants.KEYBOARD_CTRLID2] = blob
         self.blobsY.append(blob)
         # Rocks
         self.blocks = Blocks(self.NBX, self.NBY, w, h, self.W, self.H)
         # bubbles
         self.bubbles = []
+        # Ground
+        self.ground = arcade.SpriteList()
+        for x in range(2):
+            for y in range(2):
+                params = {
+                    "filePath": "projects/blobmber/images/ground.png",
+                    "position": (x*self.W//2+self.W//4, y*self.H//2+self.H//4),
+                    "size": (self.W/2, self.H/2),
+                    "isMaxRatio" : True
+                }
+                tile = createFixedSprite(params)
+                self.ground.append(tile)
 
     def update(self,deltaTime):
         # sort blobs by Y
@@ -60,7 +74,9 @@ class CyGameInGame():
 
 
     def draw(self):
-        # Draw only blocks above players
+        # Draw ground
+        self.ground.draw()
+        # Draw blocks
         self.blocks.draw()
         # Draw bubbles
         for bub in self.bubbles:

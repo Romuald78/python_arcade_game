@@ -1,3 +1,5 @@
+import random
+
 import arcade
 
 from projects.blobmber.classes.constants import Constants
@@ -22,6 +24,7 @@ class Bubble():
             "flipH": False
         }
         self.bubble = createAnimatedSprite(params)
+        self.bubble.angle = random.random()*360
 
     def update(self,deltaTime):
         self.countdown -= deltaTime

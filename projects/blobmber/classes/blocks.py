@@ -17,9 +17,9 @@ class Blocks():
             "size": (w, h),
             "filterColor": clr,
             "flipH": flip,
-            "flipV": flip,
         }
         rock = createFixedSprite(params)
+        rock.angle = random.randint(0,3)*90
         return rock
 
     def __init__(self, nbX, nbY, w, h, fullW, fullH):
@@ -27,10 +27,11 @@ class Blocks():
         ofX = (fullW - nbX*w)/2
         ofY = (fullH - nbY*h)/2
         self.rocks = arcade.SpriteList()
-        for x in range(0,nbX,2):
-            for y in range(0,nbY,2):
-                rock = self.__createBlock((x+0.5)*w + ofX, (y+0.5)*h + ofY, w, h, (255,255,255,255))
-                self.rocks.append( rock )
+        for x in range(nbX):
+            for y in range(nbY):
+                if x==0 or x==nbX-1 or y==0 or y==nbY-1 or (x%2==0 and y%2==0):
+                    rock = self.__createBlock((x+0.5)*w + ofX, (y+0.5)*h + ofY, w, h, (255,255,255,255))
+                    self.rocks.append( rock )
 
     def draw(self):
         for rock in self.rocks:

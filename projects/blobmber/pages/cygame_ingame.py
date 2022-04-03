@@ -22,7 +22,7 @@ class CyGameInGame():
         self.NBY = nbY
         self.manager = manager
 
-    def setup(self):
+    def setup(self, params=None):
         # key is ctrlID / Value is blob
         self.blobs = {}
         # list of blobs, sorted by Y

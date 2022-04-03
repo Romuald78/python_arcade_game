@@ -1,31 +1,98 @@
 import math
+import random
 
 import arcade
 
 from projects.blobmber.classes.Word import Word
+from projects.blobmber.classes.constants import Constants
+from projects.blobmber.classes.select_player import SelectPlayer
 from utils.gfx_sfx import createFixedSprite, createAnimatedSprite
 
 class CyGameSplash():
 
+    STATE_IDLE      = 0
+    STATE_SELECTING = 1
+    STATE_ALL_VALID = 2
+    STATE_STARTING  = 3
+    STATE_START     = 4
 
     def __init__(self, W, H, manager):
         super().__init__()
         self.W = W
         self.H = H
         self.manager = manager
+        self.state = self.STATE_IDLE
+        # Dict with ctrlID and color
+        self.players = []
+
+    def __goToGamePage(self, players):
+        self.manager.selectPage(2,players)
+
+    def __isRegistered(self, ctrlID):
+        for p in self.players:
+            if p["ctrlID"] == ctrlID:
+                return True
+        return False
+
+    def __areAllValids(self):
+        for p in self.players:
+            if not p["valid"]:
+                return False
+        return True
+
+    def __validPlayer(self, ctrlID):
+        for p in self.players:
+            if p["ctrlID"] == ctrlID:
+                if not p["valid"]:
+                    p["valid"] = True
+                else:
+                    # check if we can go into game
+                    if self.__areAllValids():
+                        self.__goToGamePage(self.players)
+
+    def __registerPlayer(self, ctrlID):
+        if self.state < self.STATE_STARTING:
+            if not self.__isRegistered(ctrlID):
+                r = random.randint(0,255)
+                g = random.randint(0,255)
+                b = random.randint(0,255)
+                a = Constants.BLOB_ALPHA
+                clr = (r,g,b,a)
+                selP = SelectPlayer(ctrlID, (self.W/2, -self.H))
+                selP.color = clr
+                self.players.append( {"ctrlID":ctrlID, "color":clr, "sprite":selP, "valid":False} )
+                # change state
+                if self.state == self.STATE_IDLE:
+                    self.state = self.STATE_SELECTING
+                # Set all player targets
+                N = len(self.players)
+                y = self.H//2
+                x = self.W/2 - (200*(N-1))
+                for p in self.players:
+                    p["sprite"].moveTo(x,y)
+                    x += 400
+            else:
+                # player is registered : we put it into validated state
+                self.__validPlayer(ctrlID)
 
     def __moveBack(self):
         T = 2*math.pi*self.time
         xc = self.W/4
-        rx = self.W/19
+        rx = self.W/17
         self.bigTopLeft.center_x = math.cos(T/23)*rx + xc
-        xc = self.W/6
-        rx = self.W/23
+        xc = self.W/8
+        rx = self.W/15
+        yc = 5*self.H/6
+        ry = self.H/15
         T += 73
         self.bigTopMid.center_x = math.cos(T/29)*rx + xc
+        self.bigTopMid.center_y = math.cos(T/43)*ry + yc
+        xc = self.W/2
+        rx = self.W/4
         yc = self.H/10
         ry = self.H/17
         T += 53
+        self.bottom.center_x = math.cos(T/31)*rx + xc
         self.bottom.center_y = math.cos(T/19)*ry + yc
         xc = 4*self.W/5
         rx = self.W/17
@@ -81,7 +148,7 @@ class CyGameSplash():
             "position": (3*self.W/4, 10*self.H / 11),
             "size": (self.W / 3, self.H / 3),
             "isMaxRatio": True,
-            "filterColor": (255, 255, 0, 160)
+            "filterColor": (128, 255, 0, 160)
         }
         self.topRight = createFixedSprite(params)
         params = {
@@ -108,6 +175,9 @@ class CyGameSplash():
         self.title.update(deltaTime)
         self.pressStart.update(deltaTime)
         self.__moveBack()
+        # update players
+        for p in self.players:
+            p["sprite"].update(deltaTime, p["valid"])
 
     def draw(self):
         self.bg.draw()
@@ -117,16 +187,24 @@ class CyGameSplash():
         self.bottom.draw()
         self.bottomRight.draw()
         self.title.draw()
-        if self.time >= 3:
-            self.pressStart.draw()
         if self.time <= 3:
             alpha = int(255*(2.5-self.time)/3)
             arcade.draw_rectangle_filled(self.W//2, self.H//2, self.W, self.H, (0,0,0,alpha))
+        if self.time >= 3 and self.state == self.STATE_IDLE:
+            self.pressStart.draw()
+        # display players
+        if self.state >= self.STATE_SELECTING:
+            for p in self.players:
+                p["sprite"].draw()
 
     def onKeyEvent(self, key, isPressed):
-        if key == arcade.key.SPACE and isPressed:
-            self.setup()
+        if key == arcade.key.SPACE and not isPressed:
+            self.__registerPlayer(Constants.KEYBOARD_CTRLID1)
+        if key == arcade.key.LCTRL and not isPressed:
+            self.__registerPlayer(Constants.KEYBOARD_CTRLID2)
 
     def onButtonEvent(self, gamepadNum, buttonName, isPressed):
-        pass
+        if not isPressed:
+            pass
+
 

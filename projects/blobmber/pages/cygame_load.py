@@ -14,7 +14,10 @@ class CyGameLoad():
         self.H = H
         self.manager = manager
 
-        self.STEP = 4
+        self.STEP = 6
+
+    def __goToSplashPage(self):
+        self.manager.selectPage(1)
 
     def setup(self):
         params = {
@@ -69,7 +72,7 @@ class CyGameLoad():
                 self.logoIndex += 1
         else:
             # Go to next page
-            self.manager.selectPage(1)
+            self.__goToSplashPage()
 
     def draw(self):
         if self.logoIndex < len(self.logos):
@@ -93,9 +96,9 @@ class CyGameLoad():
 
     def onKeyEvent(self, key, isPressed):
         if not isPressed:
-            pass
+            self.__goToSplashPage()
 
     def onButtonEvent(self, gamepadNum, buttonName, isPressed):
         if not isPressed:
-            pass
+            self.__goToSplashPage()
 

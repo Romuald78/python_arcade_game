@@ -10,6 +10,8 @@ class Constants():
     NB_CELLS_X = 17
     NB_CELLS_Y = 13
 
+    SELECT_RATIO = 5
+
     BLOB_ALPHA = 220
     BLOB_COLORS = [(128,255,128,220),(128,128,255,220)]
     BLOB_HW_RATIO = 1.0

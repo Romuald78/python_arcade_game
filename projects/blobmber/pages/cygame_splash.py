@@ -50,27 +50,68 @@ class CyGameSplash():
                     if self.__areAllValids():
                         self.__goToGamePage(self.players)
 
+    def __changeColor(self, ctrlID, step):
+        if self.state == self.STATE_SELECTING:
+            if self.__isRegistered(ctrlID):
+                for p in self.players:
+                    if p["ctrlID"] == ctrlID:
+                        if not p["valid"]:
+                            p["colorSeed"] += step
+                            random.seed(p["colorSeed"])
+                            # set random color
+                            r = random.randint(0, 255)
+                            g = random.randint(0, 255)
+                            b = random.randint(0, 255)
+                            a = Constants.BLOB_ALPHA
+                            clr = (r, g, b, a)
+                            p["color"] = clr
+                            p["sprite"].color = clr;
+                        break
+
+    def __unregisterPlayer(self, ctrlID):
+        if self.state < self.STATE_STARTING:
+            if self.__isRegistered(ctrlID):
+                for p in self.players:
+                    if p["ctrlID"] == ctrlID:
+                        if p["valid"]:
+                            p["valid"] = False
+                            if self.state == self.STATE_ALL_VALID:
+                                self.state = self.STATE_SELECTING
+                        else:
+                            self.players.remove( p )
+                            if self.state == self.STATE_SELECTING:
+                                if len(self.players) == 0:
+                                    self.state = self.STATE_IDLE
+                        break
+
     def __registerPlayer(self, ctrlID):
         if self.state < self.STATE_STARTING:
             if not self.__isRegistered(ctrlID):
-                r = random.randint(0,255)
-                g = random.randint(0,255)
-                b = random.randint(0,255)
-                a = Constants.BLOB_ALPHA
-                clr = (r,g,b,a)
-                selP = SelectPlayer(ctrlID, (self.W/2, -self.H))
+                clr = arcade.color.WHITE
+                selP = SelectPlayer(ctrlID, (self.W/2, -self.H), (self.W/Constants.SELECT_RATIO, self.H/Constants.SELECT_RATIO))
                 selP.color = clr
-                self.players.append( {"ctrlID":ctrlID, "color":clr, "sprite":selP, "valid":False} )
+                self.players.append( {"ctrlID":ctrlID, "colorSeed": random.randint(0,1000000), "color":clr, "sprite":selP, "valid":False} )
                 # change state
                 if self.state == self.STATE_IDLE:
                     self.state = self.STATE_SELECTING
+                # Set random color
+                self.__changeColor(ctrlID, 0)
                 # Set all player targets
+                selectW = 1.1 * self.W / Constants.SELECT_RATIO
+                selectH = self.H / Constants.SELECT_RATIO
                 N = len(self.players)
-                y = self.H//2
-                x = self.W/2 - (200*(N-1))
+                nbX = min(N,4)
+                y = self.H / 2
+                x = self.W / 2 - (selectW * 0.5 * (nbX - 1))
+                idx = 0
                 for p in self.players:
+                    if idx%4 == 0:
+                        x = self.W / 2 - (selectW * 0.5 * (nbX - 1))
                     p["sprite"].moveTo(x,y)
-                    x += 400
+                    x += selectW
+                    if idx == 3 :
+                        y -= selectH
+                    idx += 1
             else:
                 # player is registered : we put it into validated state
                 self.__validPlayer(ctrlID)
@@ -198,10 +239,37 @@ class CyGameSplash():
                 p["sprite"].draw()
 
     def onKeyEvent(self, key, isPressed):
+        # Player 1 : keyboard
         if key == arcade.key.SPACE and not isPressed:
             self.__registerPlayer(Constants.KEYBOARD_CTRLID1)
+        if key == arcade.key.BACKSPACE and not isPressed:
+            self.__unregisterPlayer(Constants.KEYBOARD_CTRLID1)
+        if key == arcade.key.LEFT and not isPressed:
+            self.__changeColor(Constants.KEYBOARD_CTRLID1, -1)
+        if key == arcade.key.RIGHT and not isPressed:
+            self.__changeColor(Constants.KEYBOARD_CTRLID1,  1)
+
+        # Player 2 : keyboard
         if key == arcade.key.LCTRL and not isPressed:
             self.__registerPlayer(Constants.KEYBOARD_CTRLID2)
+        if key == arcade.key.LSHIFT and not isPressed:
+            self.__unregisterPlayer(Constants.KEYBOARD_CTRLID2)
+        if key == arcade.key.Q and not isPressed:
+            self.__changeColor(Constants.KEYBOARD_CTRLID2, -1)
+        if key == arcade.key.D and not isPressed:
+            self.__changeColor(Constants.KEYBOARD_CTRLID2,  1)
+
+#        # DEBUG
+#        if key == arcade.key.D and isPressed:
+#            self.__registerPlayer(1)
+#            self.__registerPlayer(2)
+#        if key == arcade.key.F and isPressed:
+#            self.__registerPlayer(3)
+#            self.__registerPlayer(4)
+#        if key == arcade.key.G and isPressed:
+#            self.__registerPlayer(5)
+#            self.__registerPlayer(6)
+
 
     def onButtonEvent(self, gamepadNum, buttonName, isPressed):
         if not isPressed:

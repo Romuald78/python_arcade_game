@@ -186,6 +186,6 @@ class Blob():
         return collision2Ellipses(c, r1, r2, (self.x, self.y), self.radiusX, self.radiusY)
 
     # return drop ref for upper layer
-    def dropBubble(self):
+    def dropBubble(self, allBubbles):
         size = self.radiusX*2*Constants.BUBBLE_SIZE_COEF;
-        return Bubble( self.x, self.y, size, size, self.initColor, 1, Constants.BUBBLE_COUNTDOWN)
+        return Bubble( self.x, self.y, size, size, self.initColor, Constants.BUBBLE_POWER, Constants.BUBBLE_COUNTDOWN, allBubbles)

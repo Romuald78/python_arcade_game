@@ -117,7 +117,7 @@ class CyGameInGame():
                 self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.DOWN, isPressed)
         if arcade.key.SPACE == key and isPressed:
             if Constants.KEYBOARD_CTRLID1 in self.blobs:
-                self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID1].dropBubble() )
+                self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID1].dropBubble(self.bubbles) )
         # Player 2
         if arcade.key.Q == key:
             if Constants.KEYBOARD_CTRLID2 in self.blobs:
@@ -133,7 +133,7 @@ class CyGameInGame():
                 self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.DOWN, isPressed)
         if arcade.key.LCTRL == key and isPressed:
             if Constants.KEYBOARD_CTRLID2 in self.blobs:
-                self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID2].dropBubble() )
+                self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID2].dropBubble(self.bubbles) )
 
     def onButtonEvent(self, gamepadNum, buttonName, isPressed):
         pass

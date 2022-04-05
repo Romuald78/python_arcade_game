@@ -34,6 +34,8 @@ class Crates():
                                 dx = 2
                                 dy = 2
                                 addOK = False
+                    if random.random()<=0.85:
+                        addOK = False
                     if addOK:
                         crate = self.__createCrate((x+0.5)*w + ofX, (y+0.5)*h + ofY, w, h, (255,255,255,255))
                         self.crates.append( crate )

@@ -29,22 +29,21 @@ class SelectPlayer():
             "position": initPos,
         }
         self.frame = createFixedSprite(params)
-        fp = "gamepad"
+        idx = 0
         if ctrlID == Constants.KEYBOARD_CTRLID1 or ctrlID == Constants.KEYBOARD_CTRLID2:
-            # TODO get keayboard icon
-            fp = "gamepad"
+            # TODO get keyboard icon
+            idx = 1
         params = {
-            "filePath": f"projects/blobmber/images/{fp}.png",
-            "size": (self.refW/2, self.refH/2),
+            "filePath": "projects/blobmber/images/controllers_glow.png",
+            "size": (self.refW/3, self.refH/3),
             "position": initPos,
+            "spriteBox": (2,1,360,280),
+            "startIndex":idx,
+            "endIndex":idx,
         }
-        self.pad = createFixedSprite(params)
-        params = {
-            "filePath": f"projects/blobmber/images/{fp}_outfill.png",
-            "size": (self.refW/2, self.refH/2),
-            "position": initPos,
-        }
-        self.pad_outfill = createFixedSprite(params)
+        self.pad = createAnimatedSprite(params)
+        params["filePath"] = "projects/blobmber/images/controllers_line.png"
+        self.pad_outfill = createAnimatedSprite(params)
         self.target = initPos
 
     @property
@@ -58,9 +57,14 @@ class SelectPlayer():
         return self.blob.color
     @color.setter
     def color(self, newC):
+        r = newC[0]
+        g = newC[1]
+        b = newC[2]
+        Y = r*0.299 + g*0.587 + b*0.114
+        Y = int(min(2*Y, 255))
         self.blob.color = newC
-        self.pad.color  = newC
-        self.pad_outfill.color  = arcade.color.WHITE
+        self.pad.color = newC
+        self.pad_outfill.color = (Y,Y,Y,128)
 
     def update(self, deltaTime, anim=False):
         # Move to target
@@ -69,6 +73,9 @@ class SelectPlayer():
         # update anim
         if anim:
             self.blob.update_animation(deltaTime)
+        else:
+            self.blob.set_texture(0)
+
         # move all elements around blob
         self.frame.center_x = self.blob.center_x + self.refW/7.5
         self.frame.center_y = self.blob.center_y - self.refH/50
@@ -85,3 +92,10 @@ class SelectPlayer():
         self.pad.draw()
         self.pad_outfill.draw()
         self.blob.draw()
+        ctrlID = self.ctrlID
+        if ctrlID == Constants.KEYBOARD_CTRLID1:
+            ctrlID = 1
+        elif ctrlID == Constants.KEYBOARD_CTRLID2:
+            ctrlID = 2
+        ctrlID = str(ctrlID)
+        arcade.draw_text(ctrlID, self.pad.center_x-self.refW*len(ctrlID)/25, self.pad.center_y+self.refH/10, self.pad.color, font_size=30, align="center")

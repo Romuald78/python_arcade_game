@@ -22,10 +22,7 @@ class Blocks():
         rock.angle = random.randint(0,3)*90
         return rock
 
-    def __init__(self, nbX, nbY, w, h, fullW, fullH):
-        # compute X, Y offsets
-        ofX = (fullW - nbX*w)/2
-        ofY = (fullH - nbY*h)/2
+    def __init__(self, nbX, nbY, w, h, ofX, ofY):
         self.rocks = arcade.SpriteList()
         for x in range(nbX):
             for y in range(nbY):
@@ -39,7 +36,8 @@ class Blocks():
             if Constants.DEBUG_PHYSICS:
                 arcade.draw_rectangle_outline(rock.center_x, rock.center_y, rock.width/Constants.BLOCKS_REDUCE_FACTOR, rock.height/Constants.BLOCKS_REDUCE_FACTOR, (255,255,0,255))
 
-
+    def getList(self):
+        return list(self.rocks)
 
     def isOvalColliding(self, center, radiusX, radiusY):
         HW = self.rocks[0].width / Constants.BLOCKS_REDUCE_FACTOR / 2

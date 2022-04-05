@@ -68,6 +68,24 @@ class CyGameSplash():
                             p["sprite"].color = clr;
                         break
 
+    def __movePlayers(self):
+        # Set all player targets
+        selectW = 1.05 * self.W / Constants.SELECT_RATIO
+        selectH = self.H / Constants.SELECT_RATIO
+        N = len(self.players)
+        nbX = min(N, 4)
+        y = self.H / 2
+        x = self.W / 2.1 - (selectW * 0.5 * (nbX - 1))
+        idx = 0
+        for p in self.players:
+            if idx % 4 == 0:
+                x = self.W / 2.1 - (selectW * 0.5 * (nbX - 1))
+            p["sprite"].moveTo(x, y)
+            x += selectW
+            if idx == 3:
+                y -= selectH
+            idx += 1
+
     def __unregisterPlayer(self, ctrlID):
         if self.state < self.STATE_STARTING:
             if self.__isRegistered(ctrlID):
@@ -82,6 +100,7 @@ class CyGameSplash():
                             if self.state == self.STATE_SELECTING:
                                 if len(self.players) == 0:
                                     self.state = self.STATE_IDLE
+                            self.__movePlayers()
                         break
 
     def __registerPlayer(self, ctrlID):
@@ -96,22 +115,7 @@ class CyGameSplash():
                     self.state = self.STATE_SELECTING
                 # Set random color
                 self.__changeColor(ctrlID, 0)
-                # Set all player targets
-                selectW = 1.1 * self.W / Constants.SELECT_RATIO
-                selectH = self.H / Constants.SELECT_RATIO
-                N = len(self.players)
-                nbX = min(N,4)
-                y = self.H / 2
-                x = self.W / 2 - (selectW * 0.5 * (nbX - 1))
-                idx = 0
-                for p in self.players:
-                    if idx%4 == 0:
-                        x = self.W / 2 - (selectW * 0.5 * (nbX - 1))
-                    p["sprite"].moveTo(x,y)
-                    x += selectW
-                    if idx == 3 :
-                        y -= selectH
-                    idx += 1
+                self.__movePlayers()
             else:
                 # player is registered : we put it into validated state
                 self.__validPlayer(ctrlID)
@@ -259,20 +263,23 @@ class CyGameSplash():
         if key == arcade.key.D and not isPressed:
             self.__changeColor(Constants.KEYBOARD_CTRLID2,  1)
 
-#        # DEBUG
-#        if key == arcade.key.D and isPressed:
-#            self.__registerPlayer(1)
-#            self.__registerPlayer(2)
-#        if key == arcade.key.F and isPressed:
-#            self.__registerPlayer(3)
-#            self.__registerPlayer(4)
-#        if key == arcade.key.G and isPressed:
-#            self.__registerPlayer(5)
-#            self.__registerPlayer(6)
+        # DEBUG
+        if key == arcade.key.J and isPressed:
+            self.__registerPlayer(1)
+            self.__registerPlayer(2)
+        if key == arcade.key.K and isPressed:
+            self.__registerPlayer(3)
+            self.__registerPlayer(4)
+        if key == arcade.key.L and isPressed:
+            self.__registerPlayer(5)
+            self.__registerPlayer(6)
 
 
     def onButtonEvent(self, gamepadNum, buttonName, isPressed):
+        print(gamepadNum, buttonName, isPressed)
         if not isPressed:
             pass
 
 
+    def onAxisEvent(self, gamepadNum, axisName, analog):
+        print(gamepadNum, axisName, analog)

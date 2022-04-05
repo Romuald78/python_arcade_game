@@ -112,60 +112,59 @@ class Blob():
         self.walking[dir] = isPressed
         self.lastDir = dir
 
-    def __isNextStepOK(self, newX, newY, environment, bubbles, opponents):
-        # Collisions with environment
-        if not environment.isOvalColliding((self.x, self.y), self.radiusX, self.radiusY):
-            if environment.isOvalColliding((newX, newY), self.radiusX, self.radiusY):
-                return False
-        # Collisions with opponents
-        for o in opponents:
-            if o is not self:
-                # if we are already in collision, do not check
-                if not o.isOvalColliding((self.x, self.y), self.radiusX, self.radiusY):
-                    if o.isOvalColliding((newX, newY), self.radiusX, self.radiusY):
-                        return False
-        # Collisions with bubbles
-        for b in bubbles:
-            # If we are already in collision, do not check future movement (allow movement)
-            if not b.isOvalColliding((self.x, self.y), self.radiusX, self.radiusY):
-                if b.isOvalColliding((newX, newY), self.radiusX, self.radiusY):
+    def __isNextStepOK(self, newX, newY, obstacles):
+        for o in obstacles:
+            # if we are already in collision, do not check
+            if not o.isOvalColliding((self.x, self.y), self.radiusX, self.radiusY):
+                if o.isOvalColliding((newX, newY), self.radiusX, self.radiusY):
                     return False
         # OK to move
         return True
 
-    def __filterMove(self, deltaTime, environment, bubbles, opponents):
+    def __filterMove(self, diff, obstacles):
         # update movement
+        dx, dy = diff
+        newX = self.x + dx
+        newY = self.y + dy
+        newX2, newY2 = rotate((newX, newY), (self.x, self.y), -85)
+        newX3, newY3 = rotate((newX,newY),(self.x,self.y),85)
+        out = (self.x, self.y)
+        if self.__isNextStepOK(newX, newY, obstacles):
+            out = (newX, newY)
+        elif self.__isNextStepOK(self.x, newY, obstacles) and dy != 0:
+            out = (self.x, newY)
+        elif self.__isNextStepOK(newX, self.y, obstacles) and dx != 0:
+            out = (newX, self.y)
+        elif self.__isNextStepOK(newX2, newY2, obstacles):
+            out = (newX2, newY2)
+        elif self.__isNextStepOK(newX3, newY3, obstacles):
+            out = (newX3, newY3)
+        # return diff
+        return (out[0]-self.x, out[1]-self.y)
+
+    def update(self, deltaTime, blocks, crates, bubbles, opponents):
+        # select current anim
+        self.__selectAnim(deltaTime)
+        # get direction
         dx, dy = self.__getDirection()
         dx = dx * self.speed * deltaTime
         dy = dy * self.speed * deltaTime
-        newX = self.x + dx
-        newY = self.y + dy
-        if self.__isNextStepOK(newX, newY, environment, bubbles, opponents):
-            self.x = newX
-            self.y = newY
-            return
-        if self.__isNextStepOK(self.x, newY, environment, bubbles, opponents) and dy != 0:
-            self.y = newY
-            return
-        if self.__isNextStepOK(newX, self.y, environment, bubbles, opponents) and dx != 0:
-            self.x = newX
-            return
-        newX2, newY2 = rotate((newX,newY),(self.x,self.y),-85)
-        if self.__isNextStepOK(newX2, newY2, environment, bubbles, opponents):
-            self.x = newX2
-            self.y = newY2
-            return
-        newX2, newY2 = rotate((newX,newY),(self.x,self.y),85)
-        if self.__isNextStepOK(newX2, newY2, environment, bubbles, opponents):
-            self.x = newX2
-            self.y = newY2
-            return
-
-    def update(self, deltaTime, environment, bubbles, opponents):
-        # select current anim
-        self.__selectAnim(deltaTime)
+        # Get all obstacles (crates, blocks, bubbles, opponents, ...)
+        environment = []
+        environment.append(blocks)
+        environment.append(crates)
+        environment += opponents
+        environment += bubbles
+        # Remove self object (from player list)
+        if self in environment:
+            environment.remove(self)
         # update movement
-        self.__filterMove(deltaTime, environment, bubbles, opponents)
+        diff  = (dx, dy)
+        diff2 = self.__filterMove(diff, environment)
+        if diff2 is not None:
+            self.x += diff2[0]
+            self.y += diff2[1]
+
         # update current anim position
         self.currentAnim.center_x = self.x
         self.currentAnim.center_y = self.y + Constants.BLOB_Y_OFFSET

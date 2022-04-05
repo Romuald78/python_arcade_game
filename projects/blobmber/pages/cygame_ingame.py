@@ -5,13 +5,13 @@ import arcade
 from projects.blobmber.classes.blocks import Blocks
 from projects.blobmber.classes.blob import Blob
 from projects.blobmber.classes.constants import Constants
+from projects.blobmber.classes.crates import Crates
 from utils.collisions import collisionCircleEllipse
 from utils.gfx_sfx import createFixedSprite, createAnimatedSprite
 from utils.trigo import rotate
 
 
 class CyGameInGame():
-
 
     def __init__(self, W, H, cellSize, nbX, nbY, manager):
         super().__init__()
@@ -31,18 +31,35 @@ class CyGameInGame():
         h = w
         w2 = w * Constants.BLOB_SIZE_COEF
         h2 = h * Constants.BLOB_SIZE_COEF
-        # PLAYER 1
-        blob = Blob(self.W//2, self.H//2, w2, h2, Constants.BLOB_COLORS[0])
-        self.blobs[Constants.KEYBOARD_CTRLID1] = blob
-        self.blobsY.append(blob)
-        # PLAYER 2
-        blob = Blob(self.W//2, self.H//2, w2, h2, Constants.BLOB_COLORS[1])
-        self.blobs[Constants.KEYBOARD_CTRLID2] = blob
-        self.blobsY.append(blob)
+        # compute X, Y offsets
+        ofX = (self.W - self.NBX * w) / 2
+        ofY = (self.H - self.NBY * h) / 2
+
+        # TODO shuffle positions
+
+        # init list of start positions (for crate generation)
+        initPos = []
+        # CREATE ALL PLAYERS
+        if params is not None:
+            i = 0
+            for param in params:
+                x = Constants.BLOB_POS[i][0]
+                y = Constants.BLOB_POS[i][1]
+                initPos.append((x,y))
+                clr    = param["color"]
+                ctrlID = param["ctrlID"]
+                blob = Blob((x + 0.5) * w + ofX, (y + 0.5) * w + ofY, w2, h2, clr)
+                self.blobs[ctrlID] = blob
+                self.blobsY.append(blob)
+                i += 1
+
         # Rocks
-        self.blocks = Blocks(self.NBX, self.NBY, w, h, self.W, self.H)
+        self.blocks = Blocks(self.NBX, self.NBY, w, h, ofX, ofY)
+        # Crates
+        self.crates = Crates(self.NBX, self.NBY, w, h, ofX, ofY, initPos)
         # bubbles
         self.bubbles = []
+
         # Ground
         self.ground = arcade.SpriteList()
         for x in range(2):
@@ -60,24 +77,18 @@ class CyGameInGame():
         # sort blobs by Y
         self.blobsY = sorted(self.blobsY, key=lambda blb: -blb.center_y )
         for blob in self.blobsY:
-            blob.update(deltaTime, self.blocks, self.bubbles, self.blobsY)
-        # Draw bubbles
+            blob.update(deltaTime, self.blocks, self.crates, self.bubbles, self.blobsY)
+        # update bubbles
         for bub in self.bubbles:
             bub.update(deltaTime)
-
-#        if collisionCircleEllipse((1000,400), 150,
-#                                  (self.blobs[Constants.KEYBOARD_CTRLID1].center_x,self.blobs[Constants.KEYBOARD_CTRLID1].center_y+Constants.BLOB_Y_OFFSET),
-#                                  self.blobs[Constants.KEYBOARD_CTRLID1].radiusX, self.blobs[Constants.KEYBOARD_CTRLID1].radiusY):
-#            self.blobs[Constants.KEYBOARD_CTRLID1].setColor( (255,255,255,255) )
-#        else:
-#            self.blobs[Constants.KEYBOARD_CTRLID1].setColor( (0,255,0,255) )
-
 
     def draw(self):
         # Draw ground
         self.ground.draw()
         # Draw blocks
         self.blocks.draw()
+        # Draw crates
+        self.crates.draw()
         # Draw bubbles
         for bub in self.bubbles:
             bub.draw()
@@ -85,30 +96,39 @@ class CyGameInGame():
         for i in range(len(self.blobs)):
             self.blobsY[i].draw()
 
-
     def onKeyEvent(self, key, isPressed):
         # Player 1
         if arcade.key.LEFT == key:
-            self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.LEFT, isPressed)
+            if Constants.KEYBOARD_CTRLID1 in self.blobs:
+                self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.LEFT, isPressed)
         if arcade.key.RIGHT == key:
-            self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.RIGHT, isPressed)
+            if Constants.KEYBOARD_CTRLID1 in self.blobs:
+                self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.RIGHT, isPressed)
         if arcade.key.UP == key:
-            self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.UP, isPressed)
+            if Constants.KEYBOARD_CTRLID1 in self.blobs:
+                self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.UP, isPressed)
         if arcade.key.DOWN == key:
-            self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.DOWN, isPressed)
+            if Constants.KEYBOARD_CTRLID1 in self.blobs:
+                self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.DOWN, isPressed)
         if arcade.key.SPACE == key and isPressed:
-            self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID1].dropBubble() )
+            if Constants.KEYBOARD_CTRLID1 in self.blobs:
+                self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID1].dropBubble() )
         # Player 2
         if arcade.key.Q == key:
-            self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.LEFT, isPressed)
+            if Constants.KEYBOARD_CTRLID2 in self.blobs:
+                self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.LEFT, isPressed)
         if arcade.key.D == key:
-            self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.RIGHT, isPressed)
+            if Constants.KEYBOARD_CTRLID2 in self.blobs:
+                self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.RIGHT, isPressed)
         if arcade.key.Z == key:
-            self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.UP, isPressed)
+            if Constants.KEYBOARD_CTRLID2 in self.blobs:
+                self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.UP, isPressed)
         if arcade.key.S == key:
-            self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.DOWN, isPressed)
+            if Constants.KEYBOARD_CTRLID2 in self.blobs:
+                self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.DOWN, isPressed)
         if arcade.key.LCTRL == key and isPressed:
-            self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID2].dropBubble() )
+            if Constants.KEYBOARD_CTRLID2 in self.blobs:
+                self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID2].dropBubble() )
 
     def onButtonEvent(self, gamepadNum, buttonName, isPressed):
         pass

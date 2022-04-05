@@ -37,3 +37,4 @@ class Constants():
     BUBBLE_FRAME_SPEED = 1/7
     BUBBLE_SIZE_COEF = 1
     BUBBLE_COLL_SIZE_COEF = 0.9
+    BUBBLE_COUNTDOWN = 3

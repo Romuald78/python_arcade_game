@@ -79,19 +79,24 @@ class CyGameInGame():
         for blob in self.blobsY:
             blob.update(deltaTime, self.blocks, self.crates, self.bubbles, self.blobsY)
         # update bubbles
+        toBeRemoved = []
         for bub in self.bubbles:
             bub.update(deltaTime)
+            if bub.can_reap():
+                toBeRemoved.append(bub)
+        for tbr in toBeRemoved:
+            self.bubbles.remove(tbr)
 
     def draw(self):
         # Draw ground
         self.ground.draw()
+        # Draw bubbles
+        for bub in self.bubbles:
+            bub.draw()
         # Draw blocks
         self.blocks.draw()
         # Draw crates
         self.crates.draw()
-        # Draw bubbles
-        for bub in self.bubbles:
-            bub.draw()
         # for all players draw player and blocks below
         for i in range(len(self.blobs)):
             self.blobsY[i].draw()

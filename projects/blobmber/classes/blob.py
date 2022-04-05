@@ -188,4 +188,4 @@ class Blob():
     # return drop ref for upper layer
     def dropBubble(self):
         size = self.radiusX*2*Constants.BUBBLE_SIZE_COEF;
-        return Bubble( self.x, self.y, size, size, self.initColor, 3)
+        return Bubble( self.x, self.y, size, size, self.initColor, 1, Constants.BUBBLE_COUNTDOWN)

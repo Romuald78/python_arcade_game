@@ -4,7 +4,7 @@ import random
 import arcade
 
 from projects.blobmber.classes.constants import Constants
-from utils.collisions import collision2Ellipses, collisionCircleEllipse
+from utils.collisions import collision2Ellipses, collisionCircleEllipse, collisionCircleAABB, collisionEllipseAABB
 from utils.gfx_sfx import createAnimatedSprite
 
 
@@ -13,27 +13,32 @@ class Bubble():
     def __createExplosions(self):
         self.exploded = True
         # create center
-        x = self.bubble.center_x
-        y = self.bubble.center_y
+        x = self.initPos[0]
+        y = self.initPos[1]
         w = self.bubble.width
         h = self.bubble.height
         index = random.randint(0,1)
+        clr = (self.clr[0], self.clr[1], self.clr[2], int(0.5*(self.clr[3]+255)))
         params = {
             "filePath": "projects/blobmber/images/explosions.png",
             "position": (x, y),
             "size": (w, h),
             "spriteBox": (3, 2, 256, 256),
             "frameDuration": 1,
-            "filterColor": self.clr,
+            "filterColor": clr,
             "startIndex": index,
             "endIndex": index,
             "flipH": [True, False][random.randint(0,1)],
             "flipV": [True, False][random.randint(0,1)],
         }
         center = createAnimatedSprite(params)
-        center.angle = random.randint(0,360)
+        center.angle = random.randint(0,360) + 1
         self.explosions.append(center)
-
+        # Check collisions with all bubbles : if yes, detonate !!
+        for bub in self.allBubbles:
+            HW = self.bubble.width * Constants.BUBBLE_COLL_SIZE_COEF / 2
+            if bub.isOvalColliding((x, y), HW, HW):
+                bub.detonate()
         # create explosions according to correct angle
         params["flipH"] = False
         for angle in range(0, 360, 90):
@@ -49,21 +54,63 @@ class Bubble():
                 params["position"] = (x+dx,y+dy)
                 explode = createAnimatedSprite(params)
                 explode.angle = angle+180
-                self.explosions.append(explode)
-                # Check collisions with all bubbles : if yes, detonate !!
-                for b in self.allBubbles:
-                    HW = self.bubble.width * Constants.BUBBLE_COLL_SIZE_COEF / 2
-                    if b.isOvalColliding((x+dx, y+dy), HW, HW):
-                        b.detonate()
-                        # this is a condition to stop distance progression
-                        dist = self.power + 1
 
-    def __init__(self, x, y, w, h, clr, power, countdown, allBubbles):
+                # prepare collision data
+                HW = self.bubble.width * Constants.BUBBLE_COLL_SIZE_COEF / 2
+                HH = HW
+                if angle == 90 or angle == 270:
+                    HH /= 2
+                else:
+                    HW /= 2
+                topLeft     = (x+dx-HW/2, y+dy+HH/2)
+                bottomRight = (x+dx+HW/2, y+dy-HH/2)
+                # Check collisions with all bubbles : if yes, detonate !!
+                stop = False
+                for bub in self.allBubbles:
+                    if bub.isAABBColliding(topLeft , bottomRight):
+                        bub.detonate()
+                        stop = True
+                        break
+                # Check collisions with all blocks
+                if not stop:
+                    if self.allBlocks.isAABBColliding(topLeft , bottomRight):
+                        stop = True
+                        break
+            # Check collisions with all crates
+                if not stop:
+                    if self.allCrates.isAABBColliding(topLeft , bottomRight, True):
+                        # Create explosion anyway
+                        self.explosions.append(explode)
+                        stop = True
+                        break
+                # Stop current direction
+                if stop:
+                    break
+                # if we do not stop we can add this explosion
+                self.explosions.append(explode)
+
+    def __computeBlinkColor(self, clr):
+        r,g,b,a = clr
+        Y = 0.299*r + 0.587*g + 0.114*b
+        r = 255
+        if Y >= 128:
+            g = 0
+            b = 0
+        else:
+            g = 160
+            b = 160
+        return (int(r), int(g), int(b), a)
+
+    def __init__(self, x, y, w, h, clr, power, countdown, allBubbles, allBlocks, allCrates):
         self.allBubbles = allBubbles
+        self.allBlocks = allBlocks
+        self.allCrates = allCrates
         self.exploded = False
         self.clr = clr
+        self.blinkClr = self.__computeBlinkColor(clr)
         self.countdown = countdown
         self.power = max(1,power)
+        self.initPos = (x,y)
         params = {
             "filePath": "projects/blobmber/images/bubble.png",
             "position": (x, y),
@@ -82,6 +129,8 @@ class Bubble():
     def update(self,deltaTime):
         self.countdown -= deltaTime
         self.bubble.update_animation(deltaTime)
+        self.bubble.center_x = self.initPos[0]
+        self.bubble.center_y = self.initPos[1]
         # generate explosions
         if self.countdown <= 0:
             if not self.exploded:
@@ -90,6 +139,17 @@ class Bubble():
                 t = -self.countdown
                 for exp in self.explosions:
                     exp.alpha = self.bubble.alpha * (Constants.BUBBLE_FADE_TIME - t) / Constants.BUBBLE_FADE_TIME
+        elif self.countdown <= Constants.BUBBLE_SHAKE_TIME:
+            # The bubble is shaking
+            self.bubble.center_x = self.initPos[0] + random.randint(-Constants.BUBBLE_SHAKE_HALF, Constants.BUBBLE_SHAKE_HALF)
+            self.bubble.center_y = self.initPos[1] + random.randint(-Constants.BUBBLE_SHAKE_HALF, Constants.BUBBLE_SHAKE_HALF)
+            self.bubble.angle += random.randint(0,10)/10
+            # Last second the bubble is blinking between color and full RED
+            state = int(self.countdown*10)%2
+            if state == 0:
+                self.bubble.color = self.clr
+            elif state == 1:
+                self.bubble.color = self.blinkClr
 
     def draw(self):
         # TODO handle progressive creation of the explosions
@@ -98,10 +158,19 @@ class Bubble():
         else:
             self.explosions.draw()
         if Constants.DEBUG_PHYSICS:
-            arcade.draw_text( str(len(self.allBubbles)), self.bubble.center_x, self.bubble.center_y,(255,255,255))
-            arcade.draw_circle_outline( self.bubble.center_x, self.bubble.center_y,
+            arcade.draw_text( str(round(self.countdown,1)), self.initPos[0], self.initPos[1],(255,255,255))
+            arcade.draw_circle_outline( self.initPos[0], self.initPos[1],
                                         self.bubble.width*Constants.BUBBLE_COLL_SIZE_COEF/2,
-                                        (255,255,255))
+                                        (255,255,0,255))
+            for exp in self.explosions:
+                HW = exp.width
+                HH = HW
+                angle = (exp.angle + 720)%360
+                if angle == 90 or angle == 270:
+                    HH /= 2
+                elif angle == 180 or angle == 0:
+                    HW /= 2
+                arcade.draw_rectangle_outline(exp.center_x, exp.center_y,HH, HW, (255,0,0,255))
 
     def detonate(self):
         if self.countdown > Constants.BUBBLE_PROPAGATION_DELAY:
@@ -110,10 +179,20 @@ class Bubble():
     def can_reap(self):
         return self.countdown <= -Constants.BUBBLE_FADE_TIME
 
+    def isShaking(self):
+        return self.countdown <= Constants.BUBBLE_SHAKE_TIME
+
+    def isAABBColliding(self, tl, br):
+        if not self.exploded:
+            HW = self.bubble.width*Constants.BUBBLE_COLL_SIZE_COEF / 2
+            if collisionEllipseAABB( tl, br, self.initPos, self.bubble.width, self.bubble.height ):
+                return True
+        return False
+
     def isOvalColliding(self, center, radiusX, radiusY):
         if not self.exploded:
             HW = self.bubble.width*Constants.BUBBLE_COLL_SIZE_COEF / 2
-            if collisionCircleEllipse( (self.bubble.center_x, self.bubble.center_y) ,
+            if collisionCircleEllipse( (self.initPos[0], self.initPos[1]) ,
                                        HW,
                                        center,
                                        radiusX, radiusY

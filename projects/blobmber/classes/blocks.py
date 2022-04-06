@@ -3,7 +3,7 @@ import random
 import arcade
 
 from projects.blobmber.classes.constants import Constants
-from utils.collisions import collisionCircleAABB, collisionEllipseAABB, collisionCircleEllipse
+from utils.collisions import collisionCircleAABB, collisionEllipseAABB, collisionCircleEllipse, collision2AABB
 from utils.gfx_sfx import createAnimatedSprite, createFixedSprite
 
 
@@ -34,7 +34,7 @@ class Blocks():
         for rock in self.rocks:
             rock.draw()
             if Constants.DEBUG_PHYSICS:
-                arcade.draw_rectangle_outline(rock.center_x, rock.center_y, rock.width/Constants.BLOCKS_REDUCE_FACTOR, rock.height/Constants.BLOCKS_REDUCE_FACTOR, (255,255,0,255))
+                arcade.draw_rectangle_outline(rock.center_x, rock.center_y, rock.width/Constants.BLOCKS_REDUCE_FACTOR, rock.height/Constants.BLOCKS_REDUCE_FACTOR, (255,255,255,255))
 
     def getList(self):
         return list(self.rocks)
@@ -48,5 +48,17 @@ class Blocks():
             top    = rock.center_y + HH
             bottom = rock.center_y - HH
             if collisionEllipseAABB((left,top), (right,bottom), center, radiusX, radiusY):
+                return True
+        return False
+
+    def isAABBColliding(self, tl, br):
+        HW = self.rocks[0].width / Constants.BLOCKS_REDUCE_FACTOR / 2
+        HH = self.rocks[0].height / Constants.BLOCKS_REDUCE_FACTOR / 2
+        for rock in self.rocks:
+            left   = rock.center_x - HW
+            right  = rock.center_x + HW
+            top    = rock.center_y + HH
+            bottom = rock.center_y - HH
+            if collision2AABB((left,top), (right,bottom), tl, br):
                 return True
         return False

@@ -244,13 +244,13 @@ class CyGameSplash():
 
     def onKeyEvent(self, key, isPressed):
         # Player 1 : keyboard
-        if key == arcade.key.SPACE and not isPressed:
+        if key == arcade.key.ENTER and not isPressed:
             self.__registerPlayer(Constants.KEYBOARD_CTRLID1)
         if key == arcade.key.BACKSPACE and not isPressed:
             self.__unregisterPlayer(Constants.KEYBOARD_CTRLID1)
-        if key == arcade.key.LEFT and not isPressed:
+        if key == arcade.key.NUM_4 and not isPressed:
             self.__changeColor(Constants.KEYBOARD_CTRLID1, -1)
-        if key == arcade.key.RIGHT and not isPressed:
+        if key == arcade.key.NUM_6 and not isPressed:
             self.__changeColor(Constants.KEYBOARD_CTRLID1,  1)
 
         # Player 2 : keyboard

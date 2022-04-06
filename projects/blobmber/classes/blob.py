@@ -172,7 +172,7 @@ class Blob():
     def draw(self):
         self.currentAnim.draw()
         if Constants.DEBUG_PHYSICS:
-            arcade.draw_ellipse_outline(self.x, self.y,2*self.radiusX, 2*self.radiusY,(255,255,255,255))
+            arcade.draw_ellipse_outline(self.x, self.y,2*self.radiusX, 2*self.radiusY,(0,0,0,255))
 
     def getCenter(self):
         return (self.x, self.y)
@@ -186,6 +186,6 @@ class Blob():
         return collision2Ellipses(c, r1, r2, (self.x, self.y), self.radiusX, self.radiusY)
 
     # return drop ref for upper layer
-    def dropBubble(self, allBubbles):
+    def dropBubble(self, allBubbles, allBlocks, allCrates):
         size = self.radiusX*2*Constants.BUBBLE_SIZE_COEF;
-        return Bubble( self.x, self.y, size, size, self.initColor, Constants.BUBBLE_POWER, Constants.BUBBLE_COUNTDOWN, allBubbles)
+        return Bubble( self.x, self.y, size, size, self.initColor, Constants.BUBBLE_POWER, Constants.BUBBLE_COUNTDOWN, allBubbles, allBlocks, allCrates)

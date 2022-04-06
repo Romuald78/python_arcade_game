@@ -103,21 +103,21 @@ class CyGameInGame():
 
     def onKeyEvent(self, key, isPressed):
         # Player 1
-        if arcade.key.LEFT == key:
+        if arcade.key.NUM_4 == key:
             if Constants.KEYBOARD_CTRLID1 in self.blobs:
                 self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.LEFT, isPressed)
-        if arcade.key.RIGHT == key:
+        if arcade.key.NUM_6 == key:
             if Constants.KEYBOARD_CTRLID1 in self.blobs:
                 self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.RIGHT, isPressed)
-        if arcade.key.UP == key:
+        if arcade.key.NUM_8 == key:
             if Constants.KEYBOARD_CTRLID1 in self.blobs:
                 self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.UP, isPressed)
-        if arcade.key.DOWN == key:
+        if arcade.key.NUM_5 == key:
             if Constants.KEYBOARD_CTRLID1 in self.blobs:
                 self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.DOWN, isPressed)
-        if arcade.key.SPACE == key and isPressed:
+        if arcade.key.ENTER == key and isPressed:
             if Constants.KEYBOARD_CTRLID1 in self.blobs:
-                self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID1].dropBubble(self.bubbles) )
+                self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID1].dropBubble(self.bubbles, self.blocks, self.crates) )
         # Player 2
         if arcade.key.Q == key:
             if Constants.KEYBOARD_CTRLID2 in self.blobs:
@@ -133,7 +133,7 @@ class CyGameInGame():
                 self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.DOWN, isPressed)
         if arcade.key.LCTRL == key and isPressed:
             if Constants.KEYBOARD_CTRLID2 in self.blobs:
-                self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID2].dropBubble(self.bubbles) )
+                self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID2].dropBubble(self.bubbles, self.blocks, self.crates) )
 
     def onButtonEvent(self, gamepadNum, buttonName, isPressed):
         pass

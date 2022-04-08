@@ -167,12 +167,12 @@ class Blob():
 
         # update current anim position
         self.currentAnim.center_x = self.x
-        self.currentAnim.center_y = self.y + Constants.BLOB_Y_OFFSET
+        self.currentAnim.center_y = self.y + self.radiusY/Constants.BLOB_Y_OFFSET
 
     def draw(self):
         self.currentAnim.draw()
         if Constants.DEBUG_PHYSICS:
-            arcade.draw_ellipse_outline(self.x, self.y,2*self.radiusX, 2*self.radiusY,(0,0,0,255))
+            arcade.draw_ellipse_outline(self.x, self.y,2*self.radiusX, 2*self.radiusY,(0,0,0,160))
 
     def getCenter(self):
         return (self.x, self.y)

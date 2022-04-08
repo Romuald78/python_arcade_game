@@ -35,8 +35,8 @@ class Bubble():
         center.angle = random.randint(0,360) + 1
         self.explosions.append(center)
         # Check collisions with all bubbles : if yes, detonate !!
+        HW = self.bubble.width * Constants.BUBBLE_COLL_SIZE_COEF / 2
         for bub in self.allBubbles:
-            HW = self.bubble.width * Constants.BUBBLE_COLL_SIZE_COEF / 2
             if bub.isOvalColliding((x, y), HW, HW):
                 bub.detonate()
         # create explosions according to correct angle
@@ -44,49 +44,53 @@ class Bubble():
         for angle in range(0, 360, 90):
             for dist in range(1, self.power+1, 1):
                 # set distance
-                dx = dist * w * math.cos(angle*math.pi/180)
-                dy = dist * h * math.sin(angle * math.pi / 180)
+                dw1 = w * math.cos(angle * math.pi / 180)
+                dh1 = h * math.sin(angle * math.pi / 180)
+                dx  = dist * dw1
+                dy  = dist * dh1
+                ofx = -dw1/2
+                ofy = -dh1/2
+                realX = x + dx + ofx
+                realY = y + dy + ofy
                 # update params to display explosion
                 index = random.randint(3,5)
                 params["startIndex"] = index
                 params["endIndex"] = index
                 params["flipV"] = [True, False][random.randint(0,1)]
-                params["position"] = (x+dx,y+dy)
+                params["position"] = (realX,realY)
                 explode = createAnimatedSprite(params)
                 explode.angle = angle+180
-
                 # prepare collision data
                 HW = self.bubble.width * Constants.BUBBLE_COLL_SIZE_COEF / 2
                 HH = HW
                 if angle == 90 or angle == 270:
-                    HH /= 2
-                else:
                     HW /= 2
-                topLeft     = (x+dx-HW/2, y+dy+HH/2)
-                bottomRight = (x+dx+HW/2, y+dy-HH/2)
+                else:
+                    HH /= 2
+                topLeft     = (realX-HW, realY+HH)
+                bottomRight = (realX+HW, realY-HH)
+                #explode.width  = 2*HW
+                #explode.height = 2*HH
+
                 # Check collisions with all bubbles : if yes, detonate !!
+                # but do not stop progression
                 stop = False
                 for bub in self.allBubbles:
                     if bub.isAABBColliding(topLeft , bottomRight):
                         bub.detonate()
-                        stop = True
-                        break
                 # Check collisions with all blocks
-                if not stop:
-                    if self.allBlocks.isAABBColliding(topLeft , bottomRight):
-                        stop = True
-                        break
-            # Check collisions with all crates
+                if self.allBlocks.isAABBColliding(topLeft , bottomRight):
+                    stop = True
+                # Check collisions with all crates
                 if not stop:
                     if self.allCrates.isAABBColliding(topLeft , bottomRight, True):
-                        # Create explosion anyway
+                        # add the explosion in this case particularly
                         self.explosions.append(explode)
                         stop = True
-                        break
                 # Stop current direction
                 if stop:
                     break
-                # if we do not stop we can add this explosion
+                # if OK,  add the sprite
                 self.explosions.append(explode)
 
     def __computeBlinkColor(self, clr):
@@ -164,13 +168,8 @@ class Bubble():
                                         (255,255,0,255))
             for exp in self.explosions:
                 HW = exp.width
-                HH = HW
-                angle = (exp.angle + 720)%360
-                if angle == 90 or angle == 270:
-                    HH /= 2
-                elif angle == 180 or angle == 0:
-                    HW /= 2
-                arcade.draw_rectangle_outline(exp.center_x, exp.center_y,HH, HW, (255,0,0,255))
+                HH = exp.height
+                arcade.draw_rectangle_outline(exp.center_x, exp.center_y,HW, HH, (255,255,0,255))
 
     def detonate(self):
         if self.countdown > Constants.BUBBLE_PROPAGATION_DELAY:

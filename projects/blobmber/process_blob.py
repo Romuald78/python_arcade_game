@@ -104,12 +104,14 @@ class Process:
     ### MOUSE MOTION EVENTS
     ### ====================================================================================================
     def onMouseMotionEvent(self,x,y,dx,dy):
-        print(f"MOUSE MOTION : x={x}/y={y} dx={dx}/dy={dy}")
+        pass
+        #print(f"MOUSE MOTION : x={x}/y={y} dx={dx}/dy={dy}")
 
 
     ### ====================================================================================================
     ### MOUSE BUTTON EVENTS
     ### ====================================================================================================
     def onMouseButtonEvent(self,x,y,buttonNum,isPressed):
-        print(f"MOUSE BUTTON : x={x}/y={y} buttonNum={buttonNum} isPressed={isPressed}")
+        pass
+        #print(f"MOUSE BUTTON : x={x}/y={y} buttonNum={buttonNum} isPressed={isPressed}")
 

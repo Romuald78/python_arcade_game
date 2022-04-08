@@ -40,7 +40,7 @@ class Blocks():
         return list(self.rocks)
 
     def isOvalColliding(self, center, radiusX, radiusY):
-        HW = self.rocks[0].width / Constants.BLOCKS_REDUCE_FACTOR / 2
+        HW = self.rocks[0].width  / Constants.BLOCKS_REDUCE_FACTOR / 2
         HH = self.rocks[0].height / Constants.BLOCKS_REDUCE_FACTOR / 2
         for rock in self.rocks:
             left   = rock.center_x - HW

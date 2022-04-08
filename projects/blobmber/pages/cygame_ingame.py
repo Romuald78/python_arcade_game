@@ -21,6 +21,7 @@ class CyGameInGame():
         self.NBX = nbX
         self.NBY = nbY
         self.manager = manager
+        self.isPaused = False
 
     def setup(self, params=None):
         # key is ctrlID / Value is blob
@@ -74,66 +75,78 @@ class CyGameInGame():
                 self.ground.append(tile)
 
     def update(self,deltaTime):
-        # sort blobs by Y
-        self.blobsY = sorted(self.blobsY, key=lambda blb: -blb.center_y )
-        for blob in self.blobsY:
-            blob.update(deltaTime, self.blocks, self.crates, self.bubbles, self.blobsY)
-        # update bubbles
-        toBeRemoved = []
-        for bub in self.bubbles:
-            bub.update(deltaTime)
-            if bub.can_reap():
-                toBeRemoved.append(bub)
-        for tbr in toBeRemoved:
-            self.bubbles.remove(tbr)
+        if not self.isPaused:
+            # sort blobs by Y
+            self.blobsY = sorted(self.blobsY, key=lambda blb: -blb.center_y )
+            for blob in self.blobsY:
+                blob.update(deltaTime, self.blocks, self.crates, self.bubbles, self.blobsY)
+            # update bubbles
+            toBeRemoved = []
+            for bub in self.bubbles:
+                bub.update(deltaTime)
+                if bub.can_reap():
+                    toBeRemoved.append(bub)
+            for tbr in toBeRemoved:
+                self.bubbles.remove(tbr)
 
     def draw(self):
         # Draw ground
         self.ground.draw()
+        # Draw blocks
+        self.blocks.draw()
         # Draw bubbles
         for bub in self.bubbles:
             bub.draw()
-        # Draw blocks
-        self.blocks.draw()
+
+
         # Draw crates
         self.crates.draw()
         # for all players draw player and blocks below
         for i in range(len(self.blobs)):
             self.blobsY[i].draw()
 
+
+
     def onKeyEvent(self, key, isPressed):
-        # Player 1
-        if arcade.key.NUM_4 == key:
-            if Constants.KEYBOARD_CTRLID1 in self.blobs:
-                self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.LEFT, isPressed)
-        if arcade.key.NUM_6 == key:
-            if Constants.KEYBOARD_CTRLID1 in self.blobs:
-                self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.RIGHT, isPressed)
-        if arcade.key.NUM_8 == key:
-            if Constants.KEYBOARD_CTRLID1 in self.blobs:
-                self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.UP, isPressed)
-        if arcade.key.NUM_5 == key:
-            if Constants.KEYBOARD_CTRLID1 in self.blobs:
-                self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.DOWN, isPressed)
-        if arcade.key.ENTER == key and isPressed:
-            if Constants.KEYBOARD_CTRLID1 in self.blobs:
-                self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID1].dropBubble(self.bubbles, self.blocks, self.crates) )
-        # Player 2
-        if arcade.key.Q == key:
-            if Constants.KEYBOARD_CTRLID2 in self.blobs:
-                self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.LEFT, isPressed)
-        if arcade.key.D == key:
-            if Constants.KEYBOARD_CTRLID2 in self.blobs:
-                self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.RIGHT, isPressed)
-        if arcade.key.Z == key:
-            if Constants.KEYBOARD_CTRLID2 in self.blobs:
-                self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.UP, isPressed)
-        if arcade.key.S == key:
-            if Constants.KEYBOARD_CTRLID2 in self.blobs:
-                self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.DOWN, isPressed)
-        if arcade.key.LCTRL == key and isPressed:
-            if Constants.KEYBOARD_CTRLID2 in self.blobs:
-                self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID2].dropBubble(self.bubbles, self.blocks, self.crates) )
+        if self.isPaused:
+            if key == arcade.key.P and not isPressed:
+                self.isPaused = False
+        else:
+            if key == arcade.key.P and not isPressed:
+                self.isPaused = True
+
+            # Player 1
+            if arcade.key.NUM_4 == key:
+                if Constants.KEYBOARD_CTRLID1 in self.blobs:
+                    self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.LEFT, isPressed)
+            if arcade.key.NUM_6 == key:
+                if Constants.KEYBOARD_CTRLID1 in self.blobs:
+                    self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.RIGHT, isPressed)
+            if arcade.key.NUM_8 == key:
+                if Constants.KEYBOARD_CTRLID1 in self.blobs:
+                    self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.UP, isPressed)
+            if arcade.key.NUM_5 == key:
+                if Constants.KEYBOARD_CTRLID1 in self.blobs:
+                    self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.DOWN, isPressed)
+            if arcade.key.ENTER == key and isPressed:
+                if Constants.KEYBOARD_CTRLID1 in self.blobs:
+                    self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID1].dropBubble(self.bubbles, self.blocks, self.crates) )
+            # Player 2
+            if arcade.key.Q == key:
+                if Constants.KEYBOARD_CTRLID2 in self.blobs:
+                    self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.LEFT, isPressed)
+            if arcade.key.D == key:
+                if Constants.KEYBOARD_CTRLID2 in self.blobs:
+                    self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.RIGHT, isPressed)
+            if arcade.key.Z == key:
+                if Constants.KEYBOARD_CTRLID2 in self.blobs:
+                    self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.UP, isPressed)
+            if arcade.key.S == key:
+                if Constants.KEYBOARD_CTRLID2 in self.blobs:
+                    self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.DOWN, isPressed)
+            if arcade.key.LCTRL == key and isPressed:
+                if Constants.KEYBOARD_CTRLID2 in self.blobs:
+                    self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID2].dropBubble(self.bubbles, self.blocks, self.crates) )
 
     def onButtonEvent(self, gamepadNum, buttonName, isPressed):
         pass

@@ -106,16 +106,17 @@ class CyGameSplash():
     def __registerPlayer(self, ctrlID):
         if self.state < self.STATE_STARTING:
             if not self.__isRegistered(ctrlID):
-                clr = arcade.color.WHITE
-                selP = SelectPlayer(ctrlID, (self.W/2, -self.H), (self.W/Constants.SELECT_RATIO, self.H/Constants.SELECT_RATIO))
-                selP.color = clr
-                self.players.append( {"ctrlID":ctrlID, "colorSeed": random.randint(0,1000000), "color":clr, "sprite":selP, "valid":False} )
-                # change state
-                if self.state == self.STATE_IDLE:
-                    self.state = self.STATE_SELECTING
-                # Set random color
-                self.__changeColor(ctrlID, 0)
-                self.__movePlayers()
+                if len(self.players)<Constants.MAX_NB_PLAYERS:
+                    clr = arcade.color.WHITE
+                    selP = SelectPlayer(ctrlID, (self.W/2, -self.H), (self.W/Constants.SELECT_RATIO, self.H/Constants.SELECT_RATIO))
+                    selP.color = clr
+                    self.players.append( {"ctrlID":ctrlID, "colorSeed": random.randint(0,1000000), "color":clr, "sprite":selP, "valid":False} )
+                    # change state
+                    if self.state == self.STATE_IDLE:
+                        self.state = self.STATE_SELECTING
+                    # Set random color
+                    self.__changeColor(ctrlID, 0)
+                    self.__movePlayers()
             else:
                 # player is registered : we put it into validated state
                 self.__validPlayer(ctrlID)

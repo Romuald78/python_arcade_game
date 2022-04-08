@@ -1,8 +1,10 @@
 ### ====================================================================================================
 ### IMPORTS
 ### ====================================================================================================
+import arcade
 
-
+from utils.gfx_sfx import createFixedSprite, createAnimatedSprite
+import math
 
 class Process:
 
@@ -24,29 +26,77 @@ class Process:
     ### INIT
     ### ====================================================================================================
     def setup(self):
-        pass
+        params = {
+            "filePath" : "projects/demo/images/characters/girl_fix.png",
+            "position" : (self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT/2),
+            "flipH" : False
+        }
+        self.girlIdleR = createFixedSprite(params)
+        params["flipH"] = True
+        self.girlIdleL = createFixedSprite(params)
+        params = {
+            "filePath" : "projects/demo/images/characters/girl.png",
+            "position" : (self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT/2),
+            "spriteBox": (7,1,170,250),
+            "startIndex":1,
+            "endIndex":6,
+            "frameDuration":1/15,
+            "flipH": False
+        }
+        self.girlRunR = createAnimatedSprite(params)
+        params["flipH"] = True
+        self.girlRunL = createAnimatedSprite(params)
+
+
+        # GESTION du TEMPS
+        self.timer = 0
+        # movement directions
+        self.moveL = False
+        self.moveR = False
+        self.lastDirectionLeft = False
 
 
     ### ====================================================================================================
     ### UPDATE
     ### ====================================================================================================
     def update(self,deltaTime):
-        pass
-
+        self.girlRunL.update_animation(deltaTime)
+        self.girlRunR.update_animation(deltaTime)
+        self.timer += deltaTime
+        if self.moveL:
+            self.girlIdleR.center_x -= 15
+        if self.moveR:
+            self.girlIdleR.center_x += 15
+        self.girlIdleL.center_x = self.girlIdleR.center_x
+        self.girlRunL.center_x  = self.girlIdleR.center_x
+        self.girlRunR.center_x  = self.girlIdleR.center_x
 
     ### ====================================================================================================
     ### RENDERING
     ### ====================================================================================================
     def draw(self):
-        pass
-
+        if self.moveL == self.moveR:
+            if self.lastDirectionLeft:
+                self.girlIdleL.draw()
+            else:
+                self.girlIdleR.draw()
+        elif self.moveL:
+            self.girlRunL.draw()
+        else:
+            self.girlRunR.draw()
 
     ### ====================================================================================================
     ### KEYBOARD EVENTS
     ### key is taken from : arcade.key.xxx
     ### ====================================================================================================
     def onKeyEvent(self,key,isPressed):
-        print(f"KEYBOARD : key={key} / isPressed={isPressed}");
+        #print(f"KEYBOARD : key={key} / isPressed={isPressed}");
+        if key == arcade.key.LEFT:
+            self.moveL = isPressed
+            self.lastDirectionLeft = True
+        if key == arcade.key.RIGHT:
+            self.moveR = isPressed
+            self.lastDirectionLeft = False
 
 
     ### ====================================================================================================

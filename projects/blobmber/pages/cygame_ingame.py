@@ -88,17 +88,17 @@ class CyGameInGame():
                     toBeRemoved.append(bub)
             for tbr in toBeRemoved:
                 self.bubbles.remove(tbr)
+            # update crates
+            self.crates.update(deltaTime)
 
     def draw(self):
         # Draw ground
         self.ground.draw()
-        # Draw blocks
-        self.blocks.draw()
         # Draw bubbles
         for bub in self.bubbles:
             bub.draw()
-
-
+        # Draw blocks
+        self.blocks.draw()
         # Draw crates
         self.crates.draw()
         # for all players draw player and blocks below
@@ -130,7 +130,9 @@ class CyGameInGame():
                     self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.DOWN, isPressed)
             if arcade.key.ENTER == key and isPressed:
                 if Constants.KEYBOARD_CTRLID1 in self.blobs:
-                    self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID1].dropBubble(self.bubbles, self.blocks, self.crates) )
+                    bub = self.blobs[Constants.KEYBOARD_CTRLID1].dropBubble(self.bubbles, self.blocks, self.crates)
+                    if bub is not None:
+                        self.bubbles.append( bub )
             # Player 2
             if arcade.key.Q == key:
                 if Constants.KEYBOARD_CTRLID2 in self.blobs:
@@ -146,7 +148,9 @@ class CyGameInGame():
                     self.blobs[Constants.KEYBOARD_CTRLID2].move(Blob.DOWN, isPressed)
             if arcade.key.LCTRL == key and isPressed:
                 if Constants.KEYBOARD_CTRLID2 in self.blobs:
-                    self.bubbles.append( self.blobs[Constants.KEYBOARD_CTRLID2].dropBubble(self.bubbles, self.blocks, self.crates) )
+                    bub = self.blobs[Constants.KEYBOARD_CTRLID2].dropBubble(self.bubbles, self.blocks, self.crates)
+                    if bub is not None:
+                        self.bubbles.append( bub )
 
     def onButtonEvent(self, gamepadNum, buttonName, isPressed):
         pass

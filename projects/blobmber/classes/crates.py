@@ -20,6 +20,9 @@ class Crates():
         }
         crate = createFixedSprite(params)
         crate.angle = random.randint(0,3)*90
+        # Add specific property : destroyState
+        crate.destroyTime  = Constants.CRATE_DESTROY_TIME
+        crate.destroyState = False
         return crate
 
     def __init__(self, nbX, nbY, w, h, ofX, ofY, playerInitPos):
@@ -41,16 +44,30 @@ class Crates():
                         crate = self.__createCrate((x+0.5)*w + ofX, (y+0.5)*h + ofY, w, h, (255,255,255,255))
                         self.crates.append( crate )
 
+    def update(self, deltaTime):
+        toBeRemoved = []
+        for crate in self.crates:
+            if crate.destroyState:
+                crate.destroyTime -= deltaTime
+                if crate.destroyTime <= 0:
+                    toBeRemoved.append(crate)
+        # destroy all the crates to be
+        for tbr in toBeRemoved:
+            self.crates.remove(tbr)
+
     def draw(self):
         for crate in self.crates:
             crate.draw()
             if Constants.DEBUG_PHYSICS:
+                arcade.draw_text(str(round(crate.destroyTime, 1)), crate.center_x, crate.center_y, (255, 255, 255))
                 arcade.draw_rectangle_outline(crate.center_x, crate.center_y, crate.width/Constants.BLOCKS_REDUCE_FACTOR, crate.height/Constants.BLOCKS_REDUCE_FACTOR, (255,255,255,255))
 
     def getList(self):
         return list(self.crates)
 
     def isOvalColliding(self, center, radiusX, radiusY, destroy=False):
+        if len(self.crates) == 0:
+            return False
         HW = self.crates[0].width / Constants.BLOCKS_REDUCE_FACTOR / 2
         HH = self.crates[0].height / Constants.BLOCKS_REDUCE_FACTOR / 2
         for crate in self.crates:
@@ -65,6 +82,8 @@ class Crates():
         return False
 
     def isAABBColliding(self, tl, br, destroy=False):
+        if len(self.crates) == 0:
+            return False
         HW = self.crates[0].width / Constants.BLOCKS_REDUCE_FACTOR / 2
         HH = self.crates[0].height / Constants.BLOCKS_REDUCE_FACTOR / 2
         for crate in self.crates:
@@ -74,6 +93,6 @@ class Crates():
             bottom = crate.center_y - HH
             if collision2AABB((left,top), (right,bottom), tl, br):
                 if destroy:
-                    self.crates.remove(crate)
+                    crate.destroyState = True
                 return True
         return False

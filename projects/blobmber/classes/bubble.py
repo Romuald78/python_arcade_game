@@ -22,7 +22,7 @@ class Bubble():
         params = {
             "filePath": "projects/blobmber/images/explosions.png",
             "position": (x, y),
-            "size": (w, h),
+            "size": (w*Constants.BUBBLE_COLL_SIZE_COEF, h*Constants.BUBBLE_COLL_SIZE_COEF),
             "spriteBox": (3, 2, 256, 256),
             "frameDuration": 1,
             "filterColor": clr,
@@ -69,18 +69,26 @@ class Bubble():
                     HH /= 2
                 topLeft     = (realX-HW, realY+HH)
                 bottomRight = (realX+HW, realY-HH)
-                #explode.width  = 2*HW
-                #explode.height = 2*HH
+                #DEBUG
+                if Constants.DEBUG_PHYSICS:
+                    explode.width  = 2*HW
+                    explode.height = 2*HH
 
                 # Check collisions with all bubbles : if yes, detonate !!
-                # but do not stop progression
+                # Stop progression
                 stop = False
                 for bub in self.allBubbles:
-                    if bub.isAABBColliding(topLeft , bottomRight):
-                        bub.detonate()
+                    if bub is not self:
+                       if bub.isAABBColliding(topLeft , bottomRight):
+                            bub.detonate()
+                            print(f"stop in angle:{angle} with dist:{dist}")
+                            stop= True
+                    else:
+                        print("SKIP Bomb !!")
                 # Check collisions with all blocks
-                if self.allBlocks.isAABBColliding(topLeft , bottomRight):
-                    stop = True
+                if not stop:
+                    if self.allBlocks.isAABBColliding(topLeft , bottomRight):
+                        stop = True
                 # Check collisions with all crates
                 if not stop:
                     if self.allCrates.isAABBColliding(topLeft , bottomRight, True):
@@ -183,8 +191,7 @@ class Bubble():
 
     def isAABBColliding(self, tl, br):
         if not self.exploded:
-            HW = self.bubble.width*Constants.BUBBLE_COLL_SIZE_COEF / 2
-            if collisionEllipseAABB( tl, br, self.initPos, self.bubble.width, self.bubble.height ):
+            if collisionEllipseAABB( tl, br, self.initPos, self.bubble.width/2, self.bubble.height/2 ):
                 return True
         return False
 

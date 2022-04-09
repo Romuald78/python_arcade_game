@@ -4,6 +4,8 @@ class Constants():
 
     DEBUG_PHYSICS = False
 
+     
+
     # ==============================================
     # PLAYERS
     # ==============================================
@@ -46,8 +48,10 @@ class Constants():
     BUBBLE_COUNTDOWN = 5
     BUBBLE_FADE_TIME = 3
     BUBBLE_POWER = 4
-    BUBBLE_PROPAGATION_DELAY = 0.1
+    BUBBLE_PROPAGATION_DELAY = 0.15
     BUBBLE_SHAKE_HALF = 4
     BUBBLE_SHAKE_TIME = 2
+
+    CRATE_DESTROY_TIME = 0.5
 
     SELECT_RATIO = 4.5

@@ -188,4 +188,8 @@ class Blob():
     # return drop ref for upper layer
     def dropBubble(self, allBubbles, allBlocks, allCrates):
         size = self.radiusX*2*Constants.BUBBLE_SIZE_COEF;
+        # impossible to drop a bomb if another is colliding
+        for bub in allBubbles:
+            if bub.isOvalColliding( (self.x, self.y), self.radiusX, self.radiusY ):
+                return None
         return Bubble( self.x, self.y, size, size, self.initColor, Constants.BUBBLE_POWER, Constants.BUBBLE_COUNTDOWN, allBubbles, allBlocks, allCrates)

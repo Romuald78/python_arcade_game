@@ -3,8 +3,7 @@
 class Constants():
 
     DEBUG_PHYSICS = False
-
-     
+    DEBUG_LOW_CRATES = True
 
     # ==============================================
     # PLAYERS
@@ -41,7 +40,6 @@ class Constants():
     BLOB_REDUCE_FACTOR = 4
     BLOB_Y_OFFSET      = 3.5
 
-
     BUBBLE_FRAME_SPEED = 1/7
     BUBBLE_SIZE_COEF = 1
     BUBBLE_COLL_SIZE_COEF = 0.9
@@ -52,6 +50,9 @@ class Constants():
     BUBBLE_SHAKE_HALF = 4
     BUBBLE_SHAKE_TIME = 2
 
-    CRATE_DESTROY_TIME = 0.5
+    CRATE_DESTROY_TIME = 0.4
+
+    RUNE_OFFSET_KY = 0.225
+    RUNE_SIZE_RATIO = 0.9
 
     SELECT_RATIO = 4.5

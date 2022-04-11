@@ -25,8 +25,32 @@ class Crates():
         crate.destroyState = False
         return crate
 
+    def __createExplosion(self, x, y, w, h, angle):
+        flip = [False, True][random.randint(0,1)]
+        params = {
+            "filePath": "projects/blobmber/images/crates_explode.png",
+            "position": (x, y),
+            "size": (w, h),
+            "flipH": flip,
+            "spriteBox": (4,3,384,384),
+            "startIndex": 0,
+            "endIndex": 11,
+            "frameDuration": 2*Constants.CRATE_DESTROY_TIME/12
+        }
+        exploCrate = createAnimatedSprite(params)
+        exploCrate.angle = angle
+        return exploCrate
+
+    def destroy(self, crate):
+        # initiate delay before disappearing
+        crate.destroyState = True
+        # Create explostion animation
+        explo = self.__createExplosion(crate.center_x, crate.center_y,2*crate.width,2*crate.height, crate.angle)
+        self.exploCrates.append(explo)
+
     def __init__(self, nbX, nbY, w, h, ofX, ofY, playerInitPos):
         self.crates = arcade.SpriteList()
+        self.exploCrates = arcade.SpriteList()
         for x in range(nbX):
             for y in range(nbY):
                 if x!=0 and x!=nbX-1 and y!=0 and y!=nbY-1 and (x%2==1 or y%2==1):
@@ -38,27 +62,38 @@ class Crates():
                                 dy = 2
                                 addOK = False
                     # DEBUG
-                    if Constants.DEBUG_PHYSICS and random.random()<=0.85:
+                    if Constants.DEBUG_LOW_CRATES and random.random()<=0.85:
                         addOK = False
                     if addOK:
                         crate = self.__createCrate((x+0.5)*w + ofX, (y+0.5)*h + ofY, w, h, (255,255,255,255))
                         self.crates.append( crate )
 
     def update(self, deltaTime):
+        # update explosions
+        toBeRemoved = []
+        for explo in self.exploCrates:
+            explo.update_animation(deltaTime)
+            # TODO destroy if animation is finished
+            if explo.cur_texture_index >= 11:
+                toBeRemoved.append(explo)
+        for tbr in toBeRemoved:
+            self.exploCrates.remove(tbr)
+
+        # Remove crates is they are destroyed (end of destroyTime)
         toBeRemoved = []
         for crate in self.crates:
             if crate.destroyState:
                 crate.destroyTime -= deltaTime
                 if crate.destroyTime <= 0:
                     toBeRemoved.append(crate)
-        # destroy all the crates to be
         for tbr in toBeRemoved:
             self.crates.remove(tbr)
 
     def draw(self):
-        for crate in self.crates:
-            crate.draw()
-            if Constants.DEBUG_PHYSICS:
+        self.crates.draw()
+        self.exploCrates.draw()
+        if Constants.DEBUG_PHYSICS:
+            for crate in self.crates:
                 arcade.draw_text(str(round(crate.destroyTime, 1)), crate.center_x, crate.center_y, (255, 255, 255))
                 arcade.draw_rectangle_outline(crate.center_x, crate.center_y, crate.width/Constants.BLOCKS_REDUCE_FACTOR, crate.height/Constants.BLOCKS_REDUCE_FACTOR, (255,255,255,255))
 
@@ -77,7 +112,7 @@ class Crates():
             bottom = crate.center_y - HH
             if collisionEllipseAABB((left,top), (right,bottom), center, radiusX, radiusY):
                 if destroy:
-                    self.crates.remove(crate)
+                    self.destroy(crate)
                 return True
         return False
 
@@ -93,6 +128,6 @@ class Crates():
             bottom = crate.center_y - HH
             if collision2AABB((left,top), (right,bottom), tl, br):
                 if destroy:
-                    crate.destroyState = True
+                    self.destroy(crate)
                 return True
         return False

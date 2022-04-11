@@ -6,6 +6,7 @@ import arcade
 from projects.demo.pages.page_1_home                import Page1Home
 from projects.demo.pages.page_2a_sprite              import Page2Sprite
 from projects.demo.pages.page_2b_filtercolor import Page2bColor
+from projects.demo.pages.page_30_pymunk import Page30Pymunk
 from projects.demo.pages.page_3_anim                import Page3Anim
 from projects.demo.pages.page_4_multisprite         import Page4Multi
 from projects.demo.pages.page_5_rotation            import Page5Rotation
@@ -39,6 +40,7 @@ class Process:
         # Add all pages
         self.pages = []
 
+
         self.pages.append(Page1Home     (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pages.append(Page2Sprite   (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pages.append(Page2bColor   (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
@@ -50,6 +52,7 @@ class Process:
         self.pages.append(Page8Burst    (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pages.append(Page9Collisions(self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.pages.append(Page20Parallax(self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        self.pages.append(Page30Pymunk(self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
 
         # Set first page
         self.pageIndex = 0

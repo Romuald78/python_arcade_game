@@ -15,7 +15,14 @@ class Blob():
     DOWN  = 3
 
     def __init__(self, x, y, w, h, clr):
-        self.speed   = Constants.BLOB_MOVE_SPEED
+        # Player Properties
+        self.speed      = Constants.BLOB_MOVE_SPEED
+        self.power      = 1
+        self.countDown  = Constants.BUBBLE_COUNTDOWN
+        self.maxBombs   = 1
+        self.availBombs = 1
+        self.disease    = None
+        # Internal properties
         self.walking = [False,False,False,False]
         self.lastDir = Blob.DOWN
         self.walks   = [None,None,None,None]
@@ -62,6 +69,13 @@ class Blob():
         # position
         self.x = x
         self.y = y
+
+    def addBomb(self):
+        self.maxBombs   += 1
+        self.availBombs += 1
+
+    def addPower(self):
+        self.power += 1
 
     def __getDirection(self):
         dx = 0
@@ -187,9 +201,15 @@ class Blob():
 
     # return drop ref for upper layer
     def dropBubble(self, allBubbles, allBlocks, allCrates):
-        size = self.radiusX*2*Constants.BUBBLE_SIZE_COEF;
-        # impossible to drop a bomb if another is colliding
-        for bub in allBubbles:
-            if bub.isOvalColliding( (self.x, self.y), self.radiusX, self.radiusY ):
-                return None
-        return Bubble( self.x, self.y, size, size, self.initColor, Constants.BUBBLE_POWER, Constants.BUBBLE_COUNTDOWN, allBubbles, allBlocks, allCrates)
+        if self.availBombs > 0:
+            size = self.radiusX*2*Constants.BUBBLE_SIZE_COEF;
+            # impossible to drop a bomb if another is colliding
+            for bub in allBubbles:
+                if bub.isOvalColliding( (self.x, self.y), self.radiusX, self.radiusY ):
+                    return None
+            # Ready to drop a bomb
+            self.availBombs -= 1
+            return Bubble( self.x, self.y, size, size, self.initColor, self.power, self.countDown, allBubbles, allBlocks, allCrates, self)
+
+    def notifyExplosion(self):
+        self.availBombs += 1

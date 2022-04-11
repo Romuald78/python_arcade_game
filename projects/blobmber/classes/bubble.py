@@ -69,10 +69,6 @@ class Bubble():
                     HH /= 2
                 topLeft     = (realX-HW, realY+HH)
                 bottomRight = (realX+HW, realY-HH)
-                #DEBUG
-                if Constants.DEBUG_PHYSICS:
-                    explode.width  = 2*HW
-                    explode.height = 2*HH
 
                 # Check collisions with all bubbles : if yes, detonate !!
                 # Stop progression
@@ -81,10 +77,7 @@ class Bubble():
                     if bub is not self:
                        if bub.isAABBColliding(topLeft , bottomRight):
                             bub.detonate()
-                            print(f"stop in angle:{angle} with dist:{dist}")
                             stop= True
-                    else:
-                        print("SKIP Bomb !!")
                 # Check collisions with all blocks
                 if not stop:
                     if self.allBlocks.isAABBColliding(topLeft , bottomRight):
@@ -100,6 +93,10 @@ class Bubble():
                     break
                 # if OK,  add the sprite
                 self.explosions.append(explode)
+        # all explosions have been created
+        # notify owner of the explosion
+        self.blobOwner.notifyExplosion()
+
 
     def __computeBlinkColor(self, clr):
         r,g,b,a = clr
@@ -113,7 +110,8 @@ class Bubble():
             b = 160
         return (int(r), int(g), int(b), a)
 
-    def __init__(self, x, y, w, h, clr, power, countdown, allBubbles, allBlocks, allCrates):
+    def __init__(self, x, y, w, h, clr, power, countdown, allBubbles, allBlocks, allCrates, owner):
+        self.blobOwner = owner
         self.allBubbles = allBubbles
         self.allBlocks = allBlocks
         self.allCrates = allCrates
@@ -184,7 +182,8 @@ class Bubble():
             self.countdown = Constants.BUBBLE_PROPAGATION_DELAY
 
     def can_reap(self):
-        return self.countdown <= -Constants.BUBBLE_FADE_TIME
+        res = self.countdown <= -Constants.BUBBLE_FADE_TIME
+        return res
 
     def isShaking(self):
         return self.countdown <= Constants.BUBBLE_SHAKE_TIME

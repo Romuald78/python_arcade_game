@@ -106,12 +106,12 @@ class CyGameInGame():
     def draw(self):
         # Draw ground
         self.ground.draw()
-        # Draw bubbles
-        for bub in self.bubbles:
-            bub.draw()
         # Draw runes
         for itm in self.items:
             itm.draw()
+        # Draw bubbles
+        for bub in self.bubbles:
+            bub.draw()
         # Draw blocks
         self.blocks.draw()
         # Draw crates

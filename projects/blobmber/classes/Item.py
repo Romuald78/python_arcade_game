@@ -33,7 +33,7 @@ class Item():
             "partSpeed": 0.3,
             "filterColor": (255, 255, 255, 255),
             "startAlpha": 95,
-            "endAlpha": 55,
+            "endAlpha": 95,
             "partNB": 20,
             "maxLifeTime": 2.0,
         }

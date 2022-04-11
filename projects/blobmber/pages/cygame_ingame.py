@@ -77,8 +77,8 @@ class CyGameInGame():
                 self.ground.append(tile)
 
         self.items = []
-        for i in range(10):
-            type = random.randint(0,3)
+        for i in range(16):
+            type = random.randint(0,5)
             x = random.randint(0,6)*2 + 1
             y = random.randint(0,6)*2 + 1
             self.items.append( Item(x*w, y*h, w*Constants.RUNE_SIZE_RATIO, h*Constants.RUNE_SIZE_RATIO, type) )

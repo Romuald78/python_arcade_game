@@ -6,18 +6,20 @@ from utils.gfx_sfx import createAnimatedSprite, createParticleEmitter
 
 class Item():
 
-    TYPE_FIRE    = 0
-    TYPE_SPEED   = 1
-    TYPE_BOMB    = 2
-    TYPE_DISEASE = 3
-    NB_TYPES     = 4
+    TYPE_FIRE     = 0
+    TYPE_SPEED    = 1
+    TYPE_BOMB     = 2
+    TYPE_GAUNTLET = 3
+    TYPE_KICK     = 4
+    TYPE_DISEASE  = 5
+    NB_TYPES      = 6
 
     def __init__(self, x, y, w, h, type):
         params = {
             "filePath": "projects/blobmber/images/runes.png",
             "position": (x, y + h*Constants.RUNE_OFFSET_KY),
             "size": (w, h),
-            "spriteBox": (2, 2, 512, 512),
+            "spriteBox": (3, 2, 512, 512),
             "frameDuration": 1,
             "startIndex": type,
             "endIndex": type,
@@ -26,8 +28,8 @@ class Item():
         params = {
             "position": (x, y+h*Constants.RUNE_OFFSET_KY),
             "filePath": "projects/blobmber/images/runes_front_light.png",
-            "spriteBox": (2, 2, 512, 512),
-            "spriteSelect": (type%2, type//2),
+            "spriteBox": (3, 2, 512, 512),
+            "spriteSelect": (type%3, type//3),
             "partSize": 512,
             "partScale": w/512,
             "partSpeed": 0.3,

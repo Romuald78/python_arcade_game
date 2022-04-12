@@ -35,6 +35,7 @@ class Constants():
     ]
     BLOB_HW_RATIO      = 1.0
     BLOB_MOVE_SPEED    = 150   # pix per sec
+    BLOB_MOVE_INC_SPEED= 30
     BLOB_FRAME_SPEED   = 1/35  # sec per frame
     BLOB_SIZE_COEF     = 2.0
     BLOB_REDUCE_FACTOR = 4

@@ -1,9 +1,10 @@
 import arcade
 
+from projects.blobmber.classes.Items import Items
 from projects.blobmber.classes.bubble import Bubble
 from projects.blobmber.classes.constants import Constants
 from utils.collisions import collision2Ellipses
-from utils.gfx_sfx import createAnimatedSprite
+from utils.gfx_sfx import createAnimatedSprite, utilsUpdateAnimation
 from utils.trigo import rotate
 
 
@@ -31,6 +32,8 @@ class Blob():
         self.radiusY = self.radiusX / Constants.BLOB_HW_RATIO
         self.color     = clr
         self.initColor = clr
+        # list of runes
+        self.runes = []
 
         params = {
             "filePath": "projects/blobmber/images/blob.png",
@@ -70,11 +73,25 @@ class Blob():
         self.x = x
         self.y = y
 
-    def addBomb(self):
+    def pickUpRune(self, rune):
+        self.runes.append(rune)
+        # apply effect according to rune
+        if rune.type == Items.TYPE_BOMB:
+            self.maxBombs   += 1
+            self.availBombs += 1
+        elif rune.type == Items.TYPE_FIRE:
+            self.power += 1
+        elif rune.type == Items.TYPE_SPEED:
+            self.speed += Constants.BLOB_MOVE_INC_SPEED
+        elif rune.type == Items.TYPE_DISEASE:
+            pass
+
+
+    def __addBomb(self):
         self.maxBombs   += 1
         self.availBombs += 1
 
-    def addPower(self):
+    def __addPower(self):
         self.power += 1
 
     def __getDirection(self):
@@ -105,9 +122,11 @@ class Blob():
         else:
             # Idle animation
             result = self.idles[self.lastDir]
+        # store current animation
         self.currentAnim = result
-        self.currentAnim.update_animation(deltaTime)
         self.currentAnim.color = self.color
+        # UPDATE ANIMATION (time based or not ? bug in arcade)
+        utilsUpdateAnimation(self.currentAnim, deltaTime)
 
     @property
     def center_x(self):

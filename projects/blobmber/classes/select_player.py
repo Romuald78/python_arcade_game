@@ -3,7 +3,7 @@ import random
 import arcade.color
 
 from projects.blobmber.classes.constants import Constants
-from utils.gfx_sfx import createAnimatedSprite, createFixedSprite
+from utils.gfx_sfx import createAnimatedSprite, createFixedSprite, utilsUpdateAnimation
 
 
 class SelectPlayer():
@@ -72,7 +72,7 @@ class SelectPlayer():
         self.blob.center_y = self.blob.center_y * 0.95 + self.target[1] * 0.05
         # update anim
         if anim:
-            self.blob.update_animation(deltaTime)
+            utilsUpdateAnimation(self.blob, deltaTime)
         else:
             self.blob.set_texture(0)
 

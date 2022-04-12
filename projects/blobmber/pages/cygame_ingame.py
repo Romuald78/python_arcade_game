@@ -3,7 +3,7 @@ import random
 
 import arcade
 
-from projects.blobmber.classes.Item import Item
+from projects.blobmber.classes.Items import Items
 from projects.blobmber.classes.blocks import Blocks
 from projects.blobmber.classes.blob import Blob
 from projects.blobmber.classes.constants import Constants
@@ -76,18 +76,17 @@ class CyGameInGame():
                 tile = createFixedSprite(params)
                 self.ground.append(tile)
 
-        self.items = []
-        for i in range(16):
+        self.items = Items(self.blobsY)
+        for i in range(20):
             type = random.randint(0,5)
             x = random.randint(0,6)*2 + 1
             y = random.randint(0,6)*2 + 1
-            self.items.append( Item(x*w, y*h, w*Constants.RUNE_SIZE_RATIO, h*Constants.RUNE_SIZE_RATIO, type) )
+            self.items.addItem(x * w, y * h, w * Constants.RUNE_SIZE_RATIO, h * Constants.RUNE_SIZE_RATIO, type)
 
     def update(self,deltaTime):
         if not self.isPaused:
             # update all items
-            for itm in self.items:
-                itm.update(deltaTime)
+            self.items.update(deltaTime)
             # sort blobs by Y
             self.blobsY = sorted(self.blobsY, key=lambda blb: -blb.center_y )
             for blob in self.blobsY:
@@ -107,8 +106,7 @@ class CyGameInGame():
         # Draw ground
         self.ground.draw()
         # Draw runes
-        for itm in self.items:
-            itm.draw()
+        self.items.draw()
         # Draw bubbles
         for bub in self.bubbles:
             bub.draw()

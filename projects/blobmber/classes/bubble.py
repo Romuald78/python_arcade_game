@@ -5,7 +5,7 @@ import arcade
 
 from projects.blobmber.classes.constants import Constants
 from utils.collisions import collision2Ellipses, collisionCircleEllipse, collisionCircleAABB, collisionEllipseAABB
-from utils.gfx_sfx import createAnimatedSprite
+from utils.gfx_sfx import createAnimatedSprite, utilsUpdateAnimation
 
 
 class Bubble():
@@ -138,7 +138,7 @@ class Bubble():
 
     def update(self,deltaTime):
         self.countdown -= deltaTime
-        self.bubble.update_animation(deltaTime)
+        utilsUpdateAnimation(self.bubble, deltaTime)
         self.bubble.center_x = self.initPos[0]
         self.bubble.center_y = self.initPos[1]
         # generate explosions

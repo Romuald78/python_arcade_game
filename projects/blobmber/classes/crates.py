@@ -4,7 +4,7 @@ import arcade
 
 from projects.blobmber.classes.constants import Constants
 from utils.collisions import collisionCircleAABB, collisionEllipseAABB, collisionCircleEllipse, collision2AABB
-from utils.gfx_sfx import createAnimatedSprite, createFixedSprite
+from utils.gfx_sfx import createAnimatedSprite, createFixedSprite, utilsUpdateAnimation
 
 
 class Crates():
@@ -72,9 +72,9 @@ class Crates():
         # update explosions
         toBeRemoved = []
         for explo in self.exploCrates:
-            explo.update_animation(deltaTime)
+            numFrame = utilsUpdateAnimation(explo, deltaTime)
             # TODO destroy if animation is finished
-            if explo.cur_texture_index >= 11:
+            if numFrame >= 11:
                 toBeRemoved.append(explo)
         for tbr in toBeRemoved:
             self.exploCrates.remove(tbr)

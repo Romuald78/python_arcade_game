@@ -64,6 +64,15 @@ def createFixedSprite(params):
 # ===========================================================================
 # Function to create a sprite that contains several frames (animation)
 # ===========================================================================
+def utilsUpdateAnimation(sprite, deltaTime):
+    # increase sprite ref time with current time
+    sprite.refTime += deltaTime
+    # Select texture according to time
+    frameNum = int(sprite.refTime / sprite.frameDuration) % sprite.nbFrames
+    sprite.set_texture(frameNum)
+    return frameNum
+
+
 def createAnimatedSprite(params):
     # retrieve parameters
     filePath      = params["filePath"  ]
@@ -105,8 +114,13 @@ def createAnimatedSprite(params):
     # set frame duration
     spr.texture_change_frames = int(frameduration*60 + 0.5)
 
+    # Add specific process of time animation
+    spr.refTime       = 0
+    spr.frameDuration = frameduration
+    spr.nbFrames      = endIndex - startIndex + 1
     # return sprite object
     return spr
+
 
 
 # ===========================================================================

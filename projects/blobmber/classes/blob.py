@@ -1,8 +1,11 @@
+import random
+
 import arcade
 
 from projects.blobmber.classes.Items import Items
 from projects.blobmber.classes.bubble import Bubble
 from projects.blobmber.classes.constants import Constants
+from projects.blobmber.classes.diseases.IDisease import IDisease
 from utils.collisions import collision2Ellipses
 from utils.gfx_sfx import createAnimatedSprite, utilsUpdateAnimation
 from utils.trigo import rotate
@@ -84,8 +87,9 @@ class Blob():
         elif rune.type == Items.TYPE_SPEED:
             self.speed += Constants.BLOB_MOVE_INC_SPEED
         elif rune.type == Items.TYPE_DISEASE:
-            pass
-
+            # pick random disease
+            self.disease = IDisease.getRandomDisease()
+            print("NEW DISEASE !!!")
 
     def __addBomb(self):
         self.maxBombs   += 1
@@ -176,12 +180,26 @@ class Blob():
         return (out[0]-self.x, out[1]-self.y)
 
     def update(self, deltaTime, blocks, crates, bubbles, opponents):
+        # update disease if some (and remove it if finished)
+        if self.disease is not None:
+            self.disease.update(deltaTime)
+            if self.disease.isFinished():
+                print("REMOVE DISEASE !!!")
+                self.disease = None
+
         # select current anim
         self.__selectAnim(deltaTime)
+        # Get speed according to disease
+        speed = self.speed
+        try:
+            speed = self.disease.getMaxSpeed()
+        except Exception as ex:
+            pass
+
         # get direction
         dx, dy = self.__getDirection()
-        dx = dx * self.speed * deltaTime
-        dy = dy * self.speed * deltaTime
+        dx = dx * speed * deltaTime
+        dy = dy * speed * deltaTime
         # Get all obstacles (crates, blocks, bubbles, opponents, ...)
         environment = []
         environment.append(blocks)
@@ -203,6 +221,10 @@ class Blob():
         self.currentAnim.center_y = self.y + self.radiusY/Constants.BLOB_Y_OFFSET
 
     def draw(self):
+        self.currentAnim.color = self.color
+        if self.disease is not None:
+            v = random.randint(0,255)
+            self.currentAnim.color = (v,0,v)
         self.currentAnim.draw()
         if Constants.DEBUG_PHYSICS:
             arcade.draw_ellipse_outline(self.x, self.y,2*self.radiusX, 2*self.radiusY,(0,0,0,160))
@@ -220,6 +242,8 @@ class Blob():
 
     # return drop ref for upper layer
     def dropBubble(self, allBubbles, allBlocks, allCrates):
+        # check diseases for bomb dropping
+
         if self.availBombs > 0:
             size = self.radiusX*2*Constants.BUBBLE_SIZE_COEF;
             # impossible to drop a bomb if another is colliding

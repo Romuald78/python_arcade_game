@@ -77,8 +77,9 @@ class CyGameInGame():
                 self.ground.append(tile)
 
         self.items = Items(self.blobsY)
-        for i in range(20):
-            type = random.randint(0,5)
+        for i in range(30):
+            type = random.randint(0,2)*2        # fire / bomb / speed
+            type = 5 #disease
             x = random.randint(0,6)*2 + 1
             y = random.randint(0,6)*2 + 1
             self.items.addItem(x * w, y * h, w * Constants.RUNE_SIZE_RATIO, h * Constants.RUNE_SIZE_RATIO, type)
@@ -140,7 +141,7 @@ class CyGameInGame():
             if arcade.key.NUM_5 == key:
                 if Constants.KEYBOARD_CTRLID1 in self.blobs:
                     self.blobs[Constants.KEYBOARD_CTRLID1].move(Blob.DOWN, isPressed)
-            if arcade.key.ENTER == key and isPressed:
+            if arcade.key.NUM_ENTER == key and isPressed:
                 if Constants.KEYBOARD_CTRLID1 in self.blobs:
                     bub = self.blobs[Constants.KEYBOARD_CTRLID1].dropBubble(self.bubbles, self.blocks, self.crates)
                     if bub is not None:

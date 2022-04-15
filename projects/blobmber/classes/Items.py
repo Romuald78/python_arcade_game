@@ -7,11 +7,11 @@ from utils.trigo import distance2
 
 class Items():
 
-    TYPE_FIRE     = 0
+    TYPE_BOMB     = 0
     TYPE_KICK     = 1
     TYPE_SPEED    = 2
     TYPE_GAUNTLET = 3
-    TYPE_BOMB     = 4
+    TYPE_FIRE     = 4
     TYPE_DISEASE  = 5
     NB_TYPES      = 6
 

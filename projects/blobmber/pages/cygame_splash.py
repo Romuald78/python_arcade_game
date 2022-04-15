@@ -245,7 +245,7 @@ class CyGameSplash():
 
     def onKeyEvent(self, key, isPressed):
         # Player 1 : keyboard
-        if key == arcade.key.ENTER and not isPressed:
+        if key == arcade.key.NUM_ENTER and not isPressed:
             self.__registerPlayer(Constants.KEYBOARD_CTRLID1)
         if key == arcade.key.BACKSPACE and not isPressed:
             self.__unregisterPlayer(Constants.KEYBOARD_CTRLID1)

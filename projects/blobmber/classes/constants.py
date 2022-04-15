@@ -34,12 +34,14 @@ class Constants():
         (NB_CELLS_X-3, NB_CELLS_Y // 2),
     ]
     BLOB_HW_RATIO      = 1.0
-    BLOB_MOVE_SPEED    = 150   # pix per sec
-    BLOB_MOVE_INC_SPEED= 30
     BLOB_FRAME_SPEED   = 1/35  # sec per frame
     BLOB_SIZE_COEF     = 2.0
     BLOB_REDUCE_FACTOR = 4
     BLOB_Y_OFFSET      = 3.5
+    BLOB_MOVE_SPEED    = 150   # pix per sec
+    BLOB_MOVE_INC_SPEED= 20
+    BLOB_TURTLE_SPEED  = BLOB_MOVE_SPEED / 2.5
+    BLOB_RABBIT_SPEED  = BLOB_MOVE_SPEED * 3
 
     BUBBLE_FRAME_SPEED = 1/7
     BUBBLE_SIZE_COEF = 1
@@ -57,3 +59,4 @@ class Constants():
     RUNE_SIZE_RATIO = 0.9
 
     SELECT_RATIO = 4.5
+
